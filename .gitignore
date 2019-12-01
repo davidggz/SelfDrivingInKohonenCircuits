@@ -1,0 +1,14 @@
+*.pyc
+*.h5
+sdsim/Library
+sdsim/log/*
+sdsim/obj
+sdsim/*.sln
+sdsim/*.userprefs
+sdsim/Temp
+sdsim/Build
+sdsim/Log
+sdsim/Packages
+sdsim/.vs
+*.csproj
+env
