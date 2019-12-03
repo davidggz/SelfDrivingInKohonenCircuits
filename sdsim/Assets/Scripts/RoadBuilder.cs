@@ -15,10 +15,17 @@ public class RoadBuilder : MonoBehaviour {
 
 	public Terrain terrain;
 
+	// No se exactamente cuando se inicializa este objeto
+	// pero parece que se ha hecho en la interfaz grafica.
+	// Un GameObject en la jerarquía que se llama WorldBuilder.
+	// Dentro de su componente RoadBuilder sale un parametro
+	// llamado RoadPrefabMesh que contiene el RoadPrefab a mano.
 	public GameObject roadPrefabMesh;
 
 	public TerrainToolkit terToolkit;
 
+	// Este parametro es el indice que representa a cada 
+	// tipo de carretera distinto (tipo visual)
 	public int iRoadTexture = 0;
 	public Texture2D[] roadTextures;
 	public float[] roadOffsets;
@@ -92,36 +99,56 @@ public class RoadBuilder : MonoBehaviour {
 			//terToolkit.NormaliseTerrain(0.0f, 0.001f, 0.5f);
 		}
 		
+		// go es una copia del RoadPrefab
 		GameObject go = GameObject.Instantiate(roadPrefabMesh);
+		// MeshFilter siempre contiene la red en sí.
+		// MeshRenderer contiene como se comporta la red con respecto a la luz.
 		MeshRenderer mr = go.GetComponent<MeshRenderer>();
 		MeshFilter mf = go.GetComponent<MeshFilter>();
+		// Se genera la red
 		Mesh mesh = new Mesh();
+		// Le asignamos la red al componente MeshFilter.
 		mf.mesh = mesh;
 		createdRoad = go;
 
+		// A esto no se entra y tampoco se exactamente
+		// para que sirve. Supongo que es para meter una
+		// textura personalizada.
 		if(customRoadTexure != null)
 		{
 			mr.material.mainTexture = customRoadTexure;
 		}
 		else if(roadTextures != null && iRoadTexture < roadTextures.Length)
 		{
+			Debug.Log("Entrando en la otra opcion");
+			// Se almacena en t la textura que se va a usar.
 			Texture2D t = roadTextures[iRoadTexture];
 
 			if(mr != null && t != null)
 			{
+				// Se le pone esta textura al meshrenderer
 				mr.material.mainTexture = t;
 			}
 		}
 
+		// Comienza el algoritmo de la muerte de construir la carretera.
 		go.tag = "road_mesh";
 
+		// Un Quad es basicamente un cuadrado
 		int numQuads = path.nodes.Count - 1;
+		// Una fila de Quads generan un camino con (numQuads+1)*2 vertices
+		// Por ejemplo, 2 quads seguidos, tienen 6 vertices.
 		int numVerts = (numQuads + 1) * 2;
+		// Cada Quad tiene dos triangulos.
 		int numTris = numQuads * 2;
 
 		Vector3[] vertices = new Vector3[numVerts];
 
+		// No se refiere al numero total de indices, se refiere al número
+		// total de indices necesarios para definir los numQuads*2 cuadrados
 		int numTriIndecies = numTris * 3;
+
+		// Array de enteros con tantas posiciones como numero hemos calculado previamente
 		int[] tri = new int[numTriIndecies];
 
 		int numNormals = numVerts;
@@ -129,10 +156,14 @@ public class RoadBuilder : MonoBehaviour {
 
 		int numUvs = numVerts;
 		Vector2[] uv = new Vector2[numUvs];
-
+		
+		// Se inicializa "normals" con un vector 0, 1, 0
 		for(int iN = 0; iN < numNormals; iN++)
 			normals[iN] = Vector3.up;
 
+		// Los nodos hacen referencia a las "esferas" que conforman
+		// el path que se ha generado con MakeRandom o lo que sea
+		// y que se pasan por parametro.
 		int iNode = 0;
 
 		Vector3 posA = Vector3.zero;
@@ -143,6 +174,7 @@ public class RoadBuilder : MonoBehaviour {
 
 		for(int iVert = 0; iVert < numVerts; iVert += 2)
 		{
+
 			if(iNode + 1 < path.nodes.Count)
 			{
 				PathNode nodeA = path.nodes[iNode];
@@ -152,7 +184,11 @@ public class RoadBuilder : MonoBehaviour {
 
 				vLength = posB - posA;
 				vWidth = Vector3.Cross(vLength, Vector3.up);
+				Debug.Log(vLength);
 
+				// Estas dos condiciones hacen referencia a algunos parametros que estan 
+				// en WorldBuilder pero que parece ser que son utiles cuando se introduce un Terrain
+				// Este terrain tiene que ser introducido por el usuario.
 				if(terToolkit != null && doFlattenArroundRoad  && (iVert % 10) == 0)
 				{
 					terToolkit.FlattenArround(posA + vWidth.normalized * roadOffsetW, 10.0f, 30.0f);
