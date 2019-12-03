@@ -78,10 +78,10 @@ public class PathManager : MonoBehaviour {
 		if(smoothPathIter > 0)
 			SmoothPath();
 
-		//Should we build a road mesh along the path?
+		// Should we build a road mesh along the path?
 		// Una vez tenemos el path creado, tenemos que inicializar
 		// la carretera mediante roadBuilder
-		if(doBuildRoad && roadBuilder != null)
+		if (doBuildRoad && roadBuilder != null)
 			roadBuilder.InitRoad(path);
 
 		if(doBuildRoad && semanticSegRoadBuilder != null)
@@ -143,8 +143,9 @@ public class PathManager : MonoBehaviour {
 	{
 		path = new CarPath();
 		Vector3 v1 = new Vector3(50, 0.5f, 50);
-		Vector3 v2 = new Vector3(60, 0.5f, 55);
-		Vector3 v3 = new Vector3(70, 0.5f, 70);
+		Vector3 v2 = new Vector3(100, 0.5f, 50);
+		Vector3 v3 = new Vector3(100, 0.5f, 100);
+		Vector3 v4 = new Vector3(50, 0.5f, 100);
 
 		PathNode p1 = new PathNode();
 		p1.pos = v1;
@@ -152,10 +153,13 @@ public class PathManager : MonoBehaviour {
 		p2.pos = v2;
 		PathNode p3 = new PathNode();
 		p3.pos = v3;
+		PathNode p4 = new PathNode();
+		p4.pos = v4;
 
 		path.nodes.Add(p1);
 		path.nodes.Add(p2);
 		path.nodes.Add(p3);
+		path.nodes.Add(p4);
 
 		Debug.Log("Path david");
 	}

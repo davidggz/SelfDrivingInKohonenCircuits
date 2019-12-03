@@ -78,11 +78,14 @@ public class RoadBuilder : MonoBehaviour {
 
 	public void InitRoad(CarPath path)
 	{
+		// La verdad es que no se que hace esto, no encuentró
+		// la funcion de la API. Aquí no entra cuando genero el mapa.
 		if(terToolkit != null && doFlattenAtStart)
 		{
 			terToolkit.Flatten();
 		}
 
+		// Aqui tampoco entra cuando genero el mapa.
 		if(terToolkit != null && doGenerateTerrain)
 		{
 			terToolkit.PerlinGenerator(1, 0.1f, 10, 0.5f);

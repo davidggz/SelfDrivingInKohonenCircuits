@@ -56,6 +56,8 @@ public class TrainingManager : MonoBehaviour {
 		iRun = style;
 	}
 
+	// Esta funcion se llama cada vez que se inicia una nueva Run
+	// para confirmar el modo elegido de estilo de carretera.
 	void SwapRoadToNewTextureVariation()
 	{
 		if(roadBuilder == null)
