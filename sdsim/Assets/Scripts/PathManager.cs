@@ -49,6 +49,7 @@ public class PathManager : MonoBehaviour {
 		if(sameRandomPath)
 			Random.InitState(randSeed);
 
+		// Nada mas iniciar el juego, se comienza con una carretera.
 		InitNewRoad();			
 	}
 

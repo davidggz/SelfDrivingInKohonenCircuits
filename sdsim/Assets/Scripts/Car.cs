@@ -97,13 +97,15 @@ public class Car : MonoBehaviour, ICar {
 		//Debug.Log("request steering: " + val);
 	}
 
+	// Se coloca el Rigidbody del coche en la posición inicial
+	// con la rotación adecuada.
 	public void Set(Vector3 pos, Quaternion rot)
 	{
 		rb.position = pos;
 		rb.rotation = rot;
 
 		//just setting it once doesn't seem to work. Try setting it multiple times..
-		StartCoroutine(KeepSetting(pos, rot, 1));
+		//StartCoroutine(KeepSetting(pos, rot, 1));
 	}
 
 	IEnumerator KeepSetting(Vector3 pos, Quaternion rot, int numIter)

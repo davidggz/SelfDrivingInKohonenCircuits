@@ -1,8 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using TensorFlow;
+using System.IO;
 
-public class PIDController : MonoBehaviour {
+
+
+public class NetworkControl : MonoBehaviour
+{
 
 	public GameObject carObj;
 	public ICar car;
@@ -15,11 +20,11 @@ public class PIDController : MonoBehaviour {
 
 	//Ks is the proportion of the current vel that
 	//we use to sample ahead of the vehicles actual position.
-	public float Kv = 1.0f; 
+	public float Kv = 1.0f;
 
 	//Ks is the proportion of the current err that
 	//we use to change throtlle.
-	public float Kt = 1.0f; 
+	public float Kt = 1.0f;
 
 	float diffErr = 0f;
 	public float prevErr = 0f;
@@ -52,27 +57,44 @@ public class PIDController : MonoBehaviour {
 	{
 		car = carObj.GetComponent<ICar>();
 	}
-	
-	// Esto se activa cuando la instancia es activada
-    private void OnEnable()
-    {
-		// Una vez se activa la instancia de PIDController, se empieza a conducir.
-        if (startOnWake)
-            StartDriving();
-    }
 
-    void OnDisable()
-    {
-        StopDriving();
-    }
+	// Esto se activa cuando la instancia es activada
+	private void OnEnable()
+	{
+		// Una vez se activa la instancia de PIDController, se empieza a conducir.
+		if (startOnWake)
+			StartDriving();
+	}
+
+	void OnDisable()
+	{
+		StopDriving();
+	}
 
 	public void StartDriving()
 	{
+
+		using (var graph = new TFGraph())
+		{
+			var modelFile = File.ReadAllBytes();
+
+			graph.Import(File.ReadAllBytes("MySavedModel"));
+			var session = new TFSession(graph);
+			var runner = session.GetRunner();
+			runner.AddInput(graph["input"][0], tensor);
+			runner.Fetch(graph["output"][0]);
+
+			var output = runner.Run();
+
+			// Fetch the results from output:
+			TFTensor result = output[0];
+		}
+
 		// Active and enabled devuelve un true cuando el objeto
 		// al que se llama esta activado y tiene un script enabled.
 		// Path Manager debe estar habilitado desde un inicio,
 		// desde la interfaz.
-		if(!pm.isActiveAndEnabled || pm.path == null)
+		if (!pm.isActiveAndEnabled || pm.path == null)
 			return;
 
 		steeringReq = 0f;
@@ -88,16 +110,16 @@ public class PIDController : MonoBehaviour {
 		isDriving = true;
 		waitForStill = false;//true;
 
-        if(car != null)
-        {
-            if (!waitForStill && doDrive)
-            {
-                car.RequestThrottle(throttleVal);
-            }
+		if (car != null)
+		{
+			if (!waitForStill && doDrive)
+			{
+				car.RequestThrottle(throttleVal);
+			}
 
 			// Coloca al coche en el punto inicial de la carretera mágicamente.
-            car.RestorePosRot();
-        }
+			car.RestorePosRot();
+		}
 	}
 
 	public void StopDriving()
@@ -107,26 +129,26 @@ public class PIDController : MonoBehaviour {
 		car.RequestHandBrake(1.0f);
 		car.RequestFootBrake(1.0f);
 	}
-		
+
 	// Update is called once per frame
-	void Update () 
+	void Update()
 	{
-		if(!pm.isActiveAndEnabled)
+		if (!pm.isActiveAndEnabled)
 			return;
 
 		// isDriving se ha puesto a True en el startDriving
-		if(!isDriving)
+		if (!isDriving)
 			return;
 
-		if(waitForStill)
+		if (waitForStill)
 		{
 			car.RequestFootBrake(1.0f);
 
-			if(car.GetAccel().magnitude < 0.001f)
+			if (car.GetAccel().magnitude < 0.001f)
 			{
 				waitForStill = false;
 
-				if(doDrive)
+				if (doDrive)
 					car.RequestThrottle(throttleVal);
 			}
 			else
@@ -141,7 +163,7 @@ public class PIDController : MonoBehaviour {
 		//set the activity from the path node.
 		PathNode n = pm.path.GetActiveNode();
 
-		if(n != null && n.activity != null && n.activity.Length > 1)
+		if (n != null && n.activity != null && n.activity.Length > 1)
 		{
 			car.SetActivity(n.activity);
 		}
@@ -156,25 +178,25 @@ public class PIDController : MonoBehaviour {
 
 		Vector3 samplePos = car.GetTransform().position + (car.GetTransform().forward * velMag * Kv);
 
-		if(!pm.path.GetCrossTrackErr(samplePos, ref err))
+		if (!pm.path.GetCrossTrackErr(samplePos, ref err))
 		{
-			if(brakeOnEnd)
+			if (brakeOnEnd)
 			{
 				car.RequestFootBrake(1.0f);
 
-				if(car.GetAccel().magnitude < 0.0001f)
+				if (car.GetAccel().magnitude < 0.0001f)
 				{
 					isDriving = false;
 
-					if(endOfPathCB != null)
+					if (endOfPathCB != null)
 						endOfPathCB.Invoke();
 				}
 			}
 			else
 			{
 				isDriving = false;
-				
-				if(endOfPathCB != null)
+
+				if (endOfPathCB != null)
 					endOfPathCB.Invoke();
 			}
 
@@ -185,18 +207,18 @@ public class PIDController : MonoBehaviour {
 
 		steeringReq = (-Kp * err) - (Kd * diffErr) - (Ki * totalError);
 
-		if(doDrive)
+		if (doDrive)
 			car.RequestSteering(steeringReq);
 
-		if(doDrive)
+		if (doDrive)
 		{
-			if(car.GetVelocity().magnitude < maxSpeed)
+			if (car.GetVelocity().magnitude < maxSpeed)
 				car.RequestThrottle(throttleVal);
 			else
 				car.RequestThrottle(0.0f);
 		}
-		
-		if(pid_steering != null)
+
+		if (pid_steering != null)
 			pid_steering.text = string.Format("PID: {0}", steeringReq);
 
 		//accumulate total error
@@ -213,8 +235,8 @@ public class PIDController : MonoBehaviour {
 
 		//now get a measure of overall fitness.
 		//we don't with this to cancel out when it oscilates.
-		absTotalError += Mathf.Abs(carPosErr) + 
-		                 AccelErrFactor * car.GetAccel().magnitude;
+		absTotalError += Mathf.Abs(carPosErr) +
+						 AccelErrFactor * car.GetAccel().magnitude;
 
 	}
 }
