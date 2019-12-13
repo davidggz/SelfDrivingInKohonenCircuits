@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿// Clase hecha por mi
+
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-using TensorFlow;
+//using TensorFlow;
 using System.IO;
 
 
@@ -73,7 +75,7 @@ public class NetworkControl : MonoBehaviour
 
 	public void StartDriving()
 	{
-
+		/*
 		using (var graph = new TFGraph())
 		{
 			var modelFile = File.ReadAllBytes();
@@ -88,7 +90,7 @@ public class NetworkControl : MonoBehaviour
 
 			// Fetch the results from output:
 			TFTensor result = output[0];
-		}
+		}*/
 
 		// Active and enabled devuelve un true cuando el objeto
 		// al que se llama esta activado y tiene un script enabled.
