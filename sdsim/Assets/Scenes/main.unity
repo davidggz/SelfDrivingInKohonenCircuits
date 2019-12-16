@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 6cff14765bb2a374fa8bb56ecdf7b253, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.2112281, g: 0.25602832, b: 0.29528713, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -214,11 +214,12 @@ MonoBehaviour:
   terToolkit: {fileID: 0}
   iRoadTexture: 0
   roadTextures:
-  - {fileID: 2800000, guid: 3ba8d7480476d42a5949d182be76def3, type: 3}
+  - {fileID: 2800000, guid: 7a5900c192563c040aa232c6527f2ce7, type: 3}
   - {fileID: 2800000, guid: 7e6c18473bcb640aea31fc8e11bc31e1, type: 3}
   - {fileID: 2800000, guid: d82e04333e4dd464aaf72e160422e14f, type: 3}
   - {fileID: 2800000, guid: c6464976523804d60a08df8f0db86ad2, type: 3}
   - {fileID: 2800000, guid: 8920c937d72c7495b9086be82db951d1, type: 3}
+  - {fileID: 2800000, guid: 3ba8d7480476d42a5949d182be76def3, type: 3}
   roadOffsets:
   - 2
   - 6
@@ -1110,14 +1111,14 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
+  m_DynamicOccludee: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 95adb618a6891426891432acfb8e4a53, type: 2}
+  - {fileID: 2100000, guid: 96d8fbcebf06b9643a205bcf5a35b17a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

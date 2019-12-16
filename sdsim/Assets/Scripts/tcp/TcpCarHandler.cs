@@ -7,6 +7,7 @@ using System;
 using UnityEngine.UI;
 using System.Globalization;
 using UnityEngine.SceneManagement;
+using System.Threading;
 
 
 namespace tk
@@ -94,27 +95,28 @@ namespace tk
             JSONObject json = new JSONObject(JSONObject.Type.OBJECT);
             json.AddField("msg_type", "telemetry");
 
-            json.AddField("steering_angle", car.GetSteering() / car.GetMaxSteering());
+            json.AddField("steering_angle", (car.GetSteering() / car.GetMaxSteering()).ToString().Replace(',', '.'));
             json.AddField("throttle", car.GetThrottle());
-            json.AddField("speed", car.GetVelocity().magnitude);
+            json.AddField("speed", car.GetVelocity().magnitude.ToString().Replace(',', '.'));
             json.AddField("image", System.Convert.ToBase64String(camSensor.GetImageBytes()));
             
             json.AddField("hit", car.GetLastCollision());
             car.ClearLastCollision();
 
             Transform tm = car.GetTransform();
-            json.AddField("pos_x", tm.position.x);
-            json.AddField("pos_y", tm.position.y);
-            json.AddField("pos_z", tm.position.z);
+            json.AddField("pos_x", tm.position.x.ToString().Replace(',', '.'));
+            json.AddField("pos_y", tm.position.y.ToString().Replace(',', '.'));
+            json.AddField("pos_z", tm.position.z.ToString().Replace(',', '.'));
 
-            json.AddField("time", Time.timeSinceLevelLoad);
+            json.AddField("time", Time.timeSinceLevelLoad.ToString().Replace(',', '.'));
+			Debug.Log(car.GetVelocity().magnitude);
 
             if(pm != null)
             {
                 float cte = 0.0f;
                 if(pm.path.GetCrossTrackErr(tm.position, ref cte))
                 {
-                    json.AddField("cte", cte);
+                    json.AddField("cte", cte.ToString().Replace(',', '.'));
                 }
                 else
                 {
@@ -123,8 +125,10 @@ namespace tk
                 }
             }
 
+			print(json);
+
             client.SendMsg( json );
-        }
+		}
 
         void SendCarLoaded()
         {

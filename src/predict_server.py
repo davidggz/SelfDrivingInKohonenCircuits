@@ -115,6 +115,7 @@ class DonkeySimMsgHandler(IMesgHandler):
 
     def send_control(self, steer, throttle):
         msg = { 'msg_type' : 'control', 'steering': steer.__str__(), 'throttle':throttle.__str__(), 'brake': '0.0' }
+        print(steer.__str__())
         self.sock.queue_message(msg)
 
     def send_regen_road(self, road_style=0, rand_seed=0, turn_increment=0.0):
@@ -150,6 +151,7 @@ class DonkeySimMsgHandler(IMesgHandler):
 
 def go(filename, address, constant_throttle=0, num_cars=1, image_cb=None, rand_seed=None):
 
+    # Carga de la red de neuronas o del modelo que sea
     model = load_model(filename)
 
     #looks like we have to compile it before use. These optimizers don't matter for inference.
@@ -173,7 +175,7 @@ if __name__ == "__main__":
     parser.add_argument('--host', type=str, default='0.0.0.0', help='bind to ip')
     parser.add_argument('--port', type=int, default=9090, help='bind to port')
     parser.add_argument('--num_cars', type=int, default=1, help='how many cars to spawn')
-    parser.add_argument('--constant_throttle', type=float, default=0.0, help='apply constant throttle')
+    parser.add_argument('--constant_throttle', type=float, default=1.0, help='apply constant throttle')
     parser.add_argument('--rand_seed', type=int, default=0, help='set road generation random seed')
     args = parser.parse_args()
 

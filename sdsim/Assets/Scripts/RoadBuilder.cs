@@ -131,6 +131,8 @@ public class RoadBuilder : MonoBehaviour {
 			}
 		}
 
+
+
 		// Comienza el algoritmo de la muerte de construir la carretera.
 		go.tag = "road_mesh";
 

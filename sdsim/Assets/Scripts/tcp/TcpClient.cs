@@ -66,6 +66,7 @@ public class TcpClient : MonoBehaviour {
 		byte[] recData = new byte[recieved];
 		Buffer.BlockCopy(_recieveBuffer,0,recData,0,recieved);
 
+		Debug.Log("puta");
 		//Process data here the way you want , all your bytes will be stored in recData
 		if(onDataRecvCB != null)
 			onDataRecvCB.Invoke(recData);
