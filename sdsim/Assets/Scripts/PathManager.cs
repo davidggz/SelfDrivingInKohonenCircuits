@@ -4,10 +4,12 @@ using System.Collections;
 public class PathManager : MonoBehaviour {
 
 	public CarPath path;
+	public CarPath path2;
 
 	public GameObject prefab;
 
 	public Transform startPos;
+	public Transform startPos2;
 
 	Vector3 span = Vector3.zero;
 
@@ -75,6 +77,18 @@ public class PathManager : MonoBehaviour {
 			MakeDavidPath();
 		}
 
+		// Codigo introducido por mi
+		path2 = new CarPath();
+		Vector3 s = startPos2.position;
+		Vector3 diferenciaStartPos = startPos2.position - startPos.position;
+		for (int i = 0; i < numSpans; i++)
+		{
+			Vector3 posicion = path.nodes[i].pos;
+			PathNode p = new PathNode();
+			p.pos = posicion + diferenciaStartPos;
+			path2.nodes.Add(p);
+		}
+		// Fin de codigo introducido por mi
 
 		if(smoothPathIter > 0)
 			SmoothPath();
@@ -83,16 +97,24 @@ public class PathManager : MonoBehaviour {
 		// Una vez tenemos el path creado, tenemos que inicializar
 		// la carretera mediante roadBuilder
 		if (doBuildRoad && roadBuilder != null)
-			roadBuilder.InitRoad(path);
-
-		if(doBuildRoad && semanticSegRoadBuilder != null)
-			semanticSegRoadBuilder.InitRoad(path);
-
-		if(laneChTrainer != null && doChangeLanes)
 		{
-			laneChTrainer.ModifyPath(ref path);
+			roadBuilder.InitRoad(path2);
+			roadBuilder.InitRoad(path);
 		}
 
+		if (doBuildRoad && semanticSegRoadBuilder != null)
+		{
+			semanticSegRoadBuilder.InitRoad(path);
+			semanticSegRoadBuilder.InitRoad(path);
+		}
+
+		if (laneChTrainer != null && doChangeLanes)
+		{
+			laneChTrainer.ModifyPath(ref path);
+			laneChTrainer.ModifyPath(ref path2);
+		}
+
+		// No cambio esto porque doShowPath esta puesto en false por defecto
 		if(doShowPath)
 		{
 			for(int iN = 0; iN < path.nodes.Count; iN++)
@@ -263,7 +285,9 @@ public class PathManager : MonoBehaviour {
 	{
 		path = new CarPath();
 
-		Vector3 s = startPos.position;
+		//Vector3 s = startPos.position;
+		Vector3 s = new Vector3(50, 0.633f, 50);
+		Debug.Log(startPos.position);
 		float turn = 0f;
 		s.y = 0.5f;
 

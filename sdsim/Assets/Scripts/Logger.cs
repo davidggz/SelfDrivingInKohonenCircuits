@@ -60,8 +60,14 @@ public class Logger : MonoBehaviour {
 	public GameObject carObj;
 	public ICar car;
 	public CameraSensor camSensor;
-    public CameraSensor optionlB_CamSensor;
+	// Camara del segundo coche
+	public CameraSensor camSensor2;
+	public CameraSensor optionlB_CamSensor;
 	public Lidar lidar;
+
+	// Coger dos imagenes o solo una. Modo imagen normal/imagen modificada
+	// Valores validos: 1 2
+	public int nPhotos = 2;
 
 	//what's the current frame index
     public int frameCounter = 0;
@@ -138,6 +144,13 @@ public class Logger : MonoBehaviour {
 				writer.WriteLine("center,left,right,steering,throttle,brake,speed");
 				// Generado por mi para poder guardar las imagenes en una carpeta.
 				Directory.CreateDirectory(GetLogPath() + "IMG");
+
+				// Si estamos en el modo de dos imagenes, creamos otra carpeta.
+				if (nPhotos == 2)
+				{
+					// Generado por mi para poder guardar las imagenes en una carpeta.
+					Directory.CreateDirectory(GetLogPath() + "IMG2");
+				}
 			}
 
             if(DonkeyStyle2)
@@ -240,14 +253,15 @@ public class Logger : MonoBehaviour {
 
         if (optionlB_CamSensor != null)
         {
-            SaveCamSensor(camSensor, activity, "_a");
-            SaveCamSensor(optionlB_CamSensor, activity, "_b");
+			SaveCamSensor(camSensor, camSensor2, activity, "_a");
+
+            SaveCamSensor(optionlB_CamSensor, camSensor2, activity, "_b");
         }
         else
         {
 			// Llama a una función que introduce una imagen en 
 			// el array que introduce las imagenes
-			SaveCamSensor(camSensor, activity, "");
+			SaveCamSensor(camSensor, camSensor2, activity, "");
         }
 
         if (maxFramesToLog != -1 && frameCounter >= maxFramesToLog)
@@ -262,11 +276,16 @@ public class Logger : MonoBehaviour {
             logDisplay.text = "Log:" + frameCounter;
 	}
 
-	string GetUdacityStyleImageFilename()
+	string GetUdacityStyleImageFilename(int mode = 1)
 	{
-		// El nombre aquí es problemático ya que contiene la carpeta IMG. 
-		// Para que funcione se debe crear esta carpeta.
-		return GetLogPath() + string.Format("IMG/center_{0,8:D8}.jpg", frameCounter);
+		if (mode == 1)
+		{
+			// El nombre aquí es problemático ya que contiene la carpeta IMG. 
+			// Para que funcione se debe crear esta carpeta.
+			return GetLogPath() + string.Format("IMG/center_{0,8:D8}.jpg", frameCounter);
+		} else {
+			return GetLogPath() + string.Format("IMG2/center_{0,8:D8}.jpg", frameCounter);
+		}
 	}
 
     string GetDonkeyStyleImageFilename()
@@ -291,22 +310,34 @@ public class Logger : MonoBehaviour {
     }
 
     //Save the camera sensor to an image. Use the suffix to distinguish between cameras.
-    void SaveCamSensor(CameraSensor cs, string prefix, string suffix)
+    void SaveCamSensor(CameraSensor cs, CameraSensor cs2, string prefix, string suffix)
     {
         if (cs != null)
         {
             Texture2D image = cs.GetImage();
-
             ImageSaveJob ij = new ImageSaveJob();
 
+			// Tengo que haces la dos imagenes aunque no haga falta en todos los
+			// casos porque si lo pongo en una condición me dan warnings.
+			Texture2D image2 = cs2.GetImage(); ;
+			ImageSaveJob ij2 = new ImageSaveJob();
+
 			// Se comprueba que tipo de estilo se quiere para la imagen
-			if(UdacityStyle)
+			if (UdacityStyle)
 			{
 				// Se guarda el nombre que va a tener la imagen llamando a una función.
 				ij.filename = GetUdacityStyleImageFilename();
 
 				// Se codifica la imagen como JPG
 				ij.bytes = image.EncodeToJPG();
+
+				if (nPhotos == 2)
+				{
+					ij2.filename = GetUdacityStyleImageFilename(2);
+
+					// Se codifica la imagen como JPG
+					ij2.bytes = image2.EncodeToJPG();
+				}
 			}
             else if (DonkeyStyle)
             {
@@ -338,11 +369,20 @@ public class Logger : MonoBehaviour {
 				// Se guarda la nueva imagen en imagesToSave
 				// se hace en un lock para proteger la variable.
                 imagesToSave.Add(ij);
+				if (nPhotos == 2)
+				{
+					imagesToSave.Add(ij2);
+				}
             }
         }
     }
 
-    public void SaverThread()
+	public void setPhotoMode(int mode)
+	{
+		nPhotos = mode;
+	}
+
+	public void SaverThread()
 	{
 		while(true)
 		{
@@ -360,7 +400,7 @@ public class Logger : MonoBehaviour {
 			{
 				ImageSaveJob ij = imagesToSave[0];
 
-                //Debug.Log("saving: " + ij.filename);
+                Debug.Log("saving: " + ij.filename);
 
                 File.WriteAllBytes(ij.filename, ij.bytes);
 

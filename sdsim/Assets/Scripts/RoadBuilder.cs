@@ -48,7 +48,6 @@ public class RoadBuilder : MonoBehaviour {
 
 	public void DestroyRoad()
 	{
-		Debug.Log("HOLA");
 		GameObject[] prev = GameObject.FindGameObjectsWithTag("road_mesh");
 
 		foreach(GameObject g in prev)
@@ -120,7 +119,6 @@ public class RoadBuilder : MonoBehaviour {
 		}
 		else if(roadTextures != null && iRoadTexture < roadTextures.Length)
 		{
-			Debug.Log("Entrando en la otra opcion");
 			// Se almacena en t la textura que se va a usar.
 			Texture2D t = roadTextures[iRoadTexture];
 
@@ -186,7 +184,6 @@ public class RoadBuilder : MonoBehaviour {
 
 				vLength = posB - posA;
 				vWidth = Vector3.Cross(vLength, Vector3.up);
-				Debug.Log(vLength);
 
 				// Estas dos condiciones hacen referencia a algunos parametros que estan 
 				// en WorldBuilder pero que parece ser que son utiles cuando se introduce un Terrain

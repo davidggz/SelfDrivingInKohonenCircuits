@@ -1,13 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using UnityEngine.UI;
 
-public class JoystickCarControl : MonoBehaviour 
+public class JoystickCarControl : MonoBehaviour
 {
-	public GameObject carObj;
-	private ICar car;
+	public GameObject carObj1;
+	public GameObject carObj2;
+	private ICar car1;
+	private ICar car2;
 
 	public float MaximumSteerAngle = 25.0f; //has to be kept in sync with the car, as that's a private var.
 
@@ -16,8 +17,10 @@ public class JoystickCarControl : MonoBehaviour
 
 	void Awake()
 	{
-		if(carObj != null)
-			car = carObj.GetComponent<ICar>();
+		if (carObj1 != null)
+			car1 = carObj1.GetComponent<ICar>();
+		if (carObj2 != null)
+			car2 = carObj2.GetComponent<ICar>();
 
 	}
 
@@ -29,11 +32,15 @@ public class JoystickCarControl : MonoBehaviour
 		float v = CrossPlatformInputManager.GetAxis("Vertical");
 		float handbrake = CrossPlatformInputManager.GetAxis("Jump");
 		//Debug.Log(h * MaximumSteerAngle);
-		car.RequestSteering(h * MaximumSteerAngle);
-		car.RequestThrottle(v);
+		car1.RequestSteering(h * MaximumSteerAngle);
+		car1.RequestThrottle(v);
 		//car.RequestFootBrake(v);
-		car.RequestHandBrake(handbrake);
+		car1.RequestHandBrake(handbrake);
 		//Debug.Log("POTPOT");
+		car2.RequestSteering(h * MaximumSteerAngle);
+		car2.RequestThrottle(v);
+		//car.RequestFootBrake(v);
+		car2.RequestHandBrake(handbrake);
 
 		if (SteeringText != null)
 			SteeringText.text = string.Format("Steering: {0}", h * MaximumSteerAngle);

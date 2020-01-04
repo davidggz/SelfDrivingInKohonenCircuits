@@ -1,12 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
 
 public class TrainingManager : MonoBehaviour {
 
 	public PIDController controller;
 	public GameObject carObj;
+	public GameObject carObj2;
 	public ICar car;
+	public ICar car2;
 	public Logger logger;
 	public RoadBuilder roadBuilder;
 
@@ -25,7 +28,8 @@ public class TrainingManager : MonoBehaviour {
     void LinkObj()
     {
         car = carObj.GetComponent<ICar>();
-        if(car == null)
+		car2 = carObj2.GetComponent<ICar>();
+		if (car == null)
             Debug.LogError("TrainingManager needs car object");
 
         roadBuilder = GameObject.FindObjectOfType<RoadBuilder>();
@@ -69,8 +73,10 @@ public class TrainingManager : MonoBehaviour {
 	void StartNewRun()
 	{
 		car.RestorePosRot();
+		car2.RestorePosRot();
 		pathManager.DestroyRoad();
 		SwapRoadToNewTextureVariation();
+		Debug.Log("Justo antes de InitNewRoad");
 		pathManager.InitNewRoad();
 		controller.StartDriving();
         RepositionOverheadCamera();
@@ -105,13 +111,15 @@ public class TrainingManager : MonoBehaviour {
 
         StartNewRun();
         car.RequestFootBrake(1);
-    }
+		car2.RequestFootBrake(1);
+	}
 
     public void OnMenuRegenTrack()
     {
         StartNewRun();
         car.RequestFootBrake(1);
-    }
+		car2.RequestFootBrake(1);
+	}
 
 	void OnPathDone()
 	{

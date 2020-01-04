@@ -14,6 +14,7 @@ public class MenuHandler : MonoBehaviour {
 	public GameObject NetworkControl;
 
     public TrainingManager trainingManager;
+	public Logger loggerClass;
 
     public void Awake()
     {
@@ -33,7 +34,8 @@ public class MenuHandler : MonoBehaviour {
 
 		if(carJSControl != null)
 			carJSControl.SetActive(false);
-	
+
+		loggerClass.setPhotoMode(1);
 		Logger.SetActive(true);
 		menuPanel.SetActive(false);
         stopPanel.SetActive(true);
@@ -46,11 +48,26 @@ public class MenuHandler : MonoBehaviour {
 
 		if(carJSControl != null)
 			carJSControl.SetActive(true);
-	
+
+		loggerClass.setPhotoMode(1);
 		Logger.SetActive(true);
 		menuPanel.SetActive(false);
         stopPanel.SetActive(true);
     }
+
+	public void OnDobleImagen()
+	{
+		if (PIDContoller != null)
+			PIDContoller.SetActive(false);
+
+		if (carJSControl != null)
+			carJSControl.SetActive(true);
+
+		loggerClass.setPhotoMode(2);
+		Logger.SetActive(true);
+		menuPanel.SetActive(false);
+		stopPanel.SetActive(true);
+	}
 
 	public void OnUseNNNetworkSteering()
 	{
