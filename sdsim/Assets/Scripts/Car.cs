@@ -106,7 +106,6 @@ public class Car : MonoBehaviour, ICar {
 
 		//just setting it once doesn't seem to work. Try setting it multiple times..
 		StartCoroutine(KeepSetting(pos, rot, 1));
-		Debug.Log("Justo despues de cambiar posicion del coche.");
 	}
 
 	IEnumerator KeepSetting(Vector3 pos, Quaternion rot, int numIter)

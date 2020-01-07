@@ -309,6 +309,7 @@ MonoBehaviour:
   - 10
   - 10
   - 12
+  Deco: {fileID: 943952676}
 --- !u!4 &148377910
 Transform:
   m_ObjectHideFlags: 0
@@ -3253,6 +3254,61 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 933973294}
   m_CullTransparentMesh: 0
+--- !u!1 &943952675
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 943952677}
+  - component: {fileID: 943952676}
+  m_Layer: 0
+  m_Name: ItemSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &943952676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 943952675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76bc38b1ac7673428bca51b9d20faa1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemsToPickFrom:
+  - {fileID: 100000, guid: 62397e21d4b30a74fa662826eb58ccda, type: 3}
+  - {fileID: 100000, guid: ab655a7877e88ea45b4fca5b144dd4e1, type: 3}
+  - {fileID: 100000, guid: 0eda93526c0434948acbca2b062ea1c0, type: 3}
+  numItemsToSpread: 10000
+  car2InitialPos: {x: 3000, y: 0, z: 50}
+  range: 500
+  fromXSpread: 0
+  toXSpread: 0
+  itemYSpread: 0
+  fromZSpread: 0
+  toZSpread: 0
+--- !u!4 &943952677
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 943952675}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3000.007, y: 6.06, z: 46.23}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &968093056
 GameObject:
   m_ObjectHideFlags: 0
@@ -4949,8 +5005,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sensorCam: {fileID: 1161699631}
-  width: 160
-  height: 120
+  width: 640
+  height: 480
 --- !u!1 &1734817940
 GameObject:
   m_ObjectHideFlags: 0

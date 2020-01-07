@@ -76,7 +76,6 @@ public class TrainingManager : MonoBehaviour {
 		car2.RestorePosRot();
 		pathManager.DestroyRoad();
 		SwapRoadToNewTextureVariation();
-		Debug.Log("Justo antes de InitNewRoad");
 		pathManager.InitNewRoad();
 		controller.StartDriving();
         RepositionOverheadCamera();

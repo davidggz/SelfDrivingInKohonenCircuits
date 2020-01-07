@@ -77,7 +77,10 @@ public class PathManager : MonoBehaviour {
 			MakeDavidPath();
 		}
 
-		// Codigo introducido por mi
+		// Codigo introducido por mi.
+		// Copio el path producido por una de las funciones anteriores y les
+		// sumo un offset a todos los puntos para generar una carretera
+		// en otro lugar del mundo.
 		path2 = new CarPath();
 		Vector3 s = startPos2.position;
 		Vector3 diferenciaStartPos = startPos2.position - startPos.position;
@@ -98,7 +101,7 @@ public class PathManager : MonoBehaviour {
 		// la carretera mediante roadBuilder
 		if (doBuildRoad && roadBuilder != null)
 		{
-			roadBuilder.InitRoad(path2);
+			roadBuilder.InitRoad(path2, true);
 			roadBuilder.InitRoad(path);
 		}
 
@@ -286,6 +289,10 @@ public class PathManager : MonoBehaviour {
 		path = new CarPath();
 
 		//Vector3 s = startPos.position;
+		// Este vector es la nueva posicion inicial. Esta puesto asi
+		// para que no ocurra el bug de que el coche no se encuentre
+		// en el inicio de la carretera al regenerarla
+
 		Vector3 s = new Vector3(50, 0.633f, 50);
 		Debug.Log(startPos.position);
 		float turn = 0f;
@@ -307,8 +314,8 @@ public class PathManager : MonoBehaviour {
 			//david[0] = david[0] + 1M
 			// // Con este código se puede poner una esfera en todos puntos
 			// // que componen la carretera.
-			// GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-			// sphere.transform.position = np;
+			//GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			//sphere.transform.position = np;
 
 			// El array en el que debemos poner los puntos que generen la carretera
 			// es path.

@@ -35,6 +35,8 @@ public class RoadBuilder : MonoBehaviour {
 
 	GameObject createdRoad;
 
+	public DecorationSpreader Deco;
+
 	void Start()
 	{
 		if(terToolkit != null && doErodeTerrain)
@@ -52,6 +54,9 @@ public class RoadBuilder : MonoBehaviour {
 
 		foreach(GameObject g in prev)
 			Destroy(g);
+
+		//Destruye la decoracion que se haya podido introducir
+		Deco.DestroyDecoration();
 
 		//advance road index into texture list.
 		iRoadTexture += 1;
@@ -82,7 +87,7 @@ public class RoadBuilder : MonoBehaviour {
 		mr.material.mainTextureScale = ms;
 	}
 
-	public void InitRoad(CarPath path)
+	public void InitRoad(CarPath path, bool generateDeco = false)
 	{
 		// La verdad es que no se que hace esto, no encuentró
 		// la funcion de la API. Aquí no entra cuando genero el mapa.
@@ -217,6 +222,11 @@ public class RoadBuilder : MonoBehaviour {
 			uv[iVert + 1] = new Vector2(0.2f * iNode, 1.0f);
 
 			iNode++;
+		}
+
+		if(generateDeco == true)
+		{
+			Deco.SpreadItems(path, roadWidth);
 		}
 
 		int iVertOffset = 0;
