@@ -32,15 +32,17 @@ public class JoystickCarControl : MonoBehaviour
 		float v = CrossPlatformInputManager.GetAxis("Vertical");
 		float handbrake = CrossPlatformInputManager.GetAxis("Jump");
 		//Debug.Log(h * MaximumSteerAngle);
+		//Debug.Log("RequestSteering COCHE2");
+		car2.RequestSteering(h * MaximumSteerAngle);
+		//Debug.Log("RequestSteering COCHE1");
 		car1.RequestSteering(h * MaximumSteerAngle);
 		car1.RequestThrottle(v);
-		//car.RequestFootBrake(v);
-		car1.RequestHandBrake(handbrake);
-		//Debug.Log("POTPOT");
-		car2.RequestSteering(h * MaximumSteerAngle);
 		car2.RequestThrottle(v);
 		//car.RequestFootBrake(v);
+		car1.RequestHandBrake(handbrake);
 		car2.RequestHandBrake(handbrake);
+		//Debug.Log("POTPOT");
+		//car.RequestFootBrake(v);
 
 		if (SteeringText != null)
 			SteeringText.text = string.Format("Steering: {0}", h * MaximumSteerAngle);

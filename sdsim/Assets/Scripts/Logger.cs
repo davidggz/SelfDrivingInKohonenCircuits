@@ -121,6 +121,9 @@ public class Logger : MonoBehaviour {
 
 	void Awake()
 	{
+		if (File.Exists(GetLogPath() + "/IMG")){
+			frameCounter = Directory.GetFiles(GetLogPath() + "/IMG").Length;
+		}
 		car = carObj.GetComponent<ICar>();
 
 		if(bDoLog && car != null)
@@ -282,9 +285,9 @@ public class Logger : MonoBehaviour {
 		{
 			// El nombre aquí es problemático ya que contiene la carpeta IMG. 
 			// Para que funcione se debe crear esta carpeta.
-			return GetLogPath() + string.Format("IMG/center_{0,8:D8}.jpg", frameCounter);
+			return GetLogPath() + string.Format("IMG/road_{0,8:D8}.png", frameCounter);
 		} else {
-			return GetLogPath() + string.Format("IMG2/center_{0,8:D8}.jpg", frameCounter);
+			return GetLogPath() + string.Format("IMG2/road_{0,8:D8}.png", frameCounter);
 		}
 	}
 
@@ -315,12 +318,12 @@ public class Logger : MonoBehaviour {
         if (cs != null)
         {
             Texture2D image = cs.GetImage();
-            ImageSaveJob ij = new ImageSaveJob();
+			Texture2D image2 = cs2.GetImage();
+			ImageSaveJob ij = new ImageSaveJob();
+			ImageSaveJob ij2 = new ImageSaveJob();
 
 			// Tengo que haces la dos imagenes aunque no haga falta en todos los
 			// casos porque si lo pongo en una condición me dan warnings.
-			Texture2D image2 = cs2.GetImage(); ;
-			ImageSaveJob ij2 = new ImageSaveJob();
 
 			// Se comprueba que tipo de estilo se quiere para la imagen
 			if (UdacityStyle)
@@ -329,14 +332,14 @@ public class Logger : MonoBehaviour {
 				ij.filename = GetUdacityStyleImageFilename();
 
 				// Se codifica la imagen como JPG
-				ij.bytes = image.EncodeToJPG();
+				ij.bytes = image.EncodeToPNG();
 
 				if (nPhotos == 2)
 				{
 					ij2.filename = GetUdacityStyleImageFilename(2);
 
 					// Se codifica la imagen como JPG
-					ij2.bytes = image2.EncodeToJPG();
+					ij2.bytes = image2.EncodeToPNG();
 				}
 			}
             else if (DonkeyStyle)

@@ -4,6 +4,8 @@ using System.Collections;
 
 public class Car : MonoBehaviour, ICar {
 
+	public string nombreCoche;
+
 	public WheelCollider[] wheelColliders;
 	public Transform[] wheelMeshes;
 
@@ -201,6 +203,7 @@ public class Car : MonoBehaviour, ICar {
 
 	void FixedUpdate()
 	{
+		Debug.Log("Update " + nombreCoche);
 		lastSteer = requestSteering;
 		lastAccel = requestTorque;
 

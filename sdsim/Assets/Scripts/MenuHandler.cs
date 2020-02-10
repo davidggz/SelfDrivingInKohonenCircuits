@@ -12,8 +12,9 @@ public class MenuHandler : MonoBehaviour {
 	public GameObject stopPanel;
     public GameObject carJSControl;
 	public GameObject NetworkControl;
+	public GameObject imagenesRealistas;
 
-    public TrainingManager trainingManager;
+	public TrainingManager trainingManager;
 	public Logger loggerClass;
 
     public void Awake()
@@ -65,6 +66,19 @@ public class MenuHandler : MonoBehaviour {
 
 		loggerClass.setPhotoMode(2);
 		Logger.SetActive(true);
+		menuPanel.SetActive(false);
+		stopPanel.SetActive(true);
+	}
+	public void OnMundoRealista()
+	{
+		if (PIDContoller != null)
+			PIDContoller.SetActive(false);
+
+		if (carJSControl != null)
+			carJSControl.SetActive(true);
+
+		Logger.SetActive(true);
+		imagenesRealistas.SetActive(true);
 		menuPanel.SetActive(false);
 		stopPanel.SetActive(true);
 	}
