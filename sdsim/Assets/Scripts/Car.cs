@@ -203,7 +203,7 @@ public class Car : MonoBehaviour, ICar {
 
 	void FixedUpdate()
 	{
-		Debug.Log("Update " + nombreCoche);
+		//Debug.Log("Update " + nombreCoche);
 		lastSteer = requestSteering;
 		lastAccel = requestTorque;
 

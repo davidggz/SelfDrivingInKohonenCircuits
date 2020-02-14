@@ -84,7 +84,7 @@ public class PathManager : MonoBehaviour {
 		path2 = new CarPath();
 		Vector3 s = startPos2.position;
 		Vector3 diferenciaStartPos = startPos2.position - startPos.position;
-		for (int i = 0; i < numSpans; i++)
+		for (int i = 0; i < path.nodes.Count; i++)
 		{
 			Vector3 posicion = path.nodes[i].pos;
 			PathNode p = new PathNode();
@@ -168,26 +168,22 @@ public class PathManager : MonoBehaviour {
 	void MakeDavidPath()
 	{
 		path = new CarPath();
-		Vector3 v1 = new Vector3(50, 0.5f, 50);
-		Vector3 v2 = new Vector3(100, 0.5f, 50);
-		Vector3 v3 = new Vector3(100, 0.5f, 100);
-		Vector3 v4 = new Vector3(50, 0.5f, 100);
+		int numPoints = 20;
+		Vector3[] kohonen = Kohonen.KohonenMain(numPoints);
+		for (int i = 0; i < numPoints; i++)
+		{
+			PathNode p = new PathNode();
+			p.pos = kohonen[i];
+			path.nodes.Add(p);
 
-		PathNode p1 = new PathNode();
-		p1.pos = v1;
-		PathNode p2 = new PathNode();
-		p2.pos = v2;
-		PathNode p3 = new PathNode();
-		p3.pos = v3;
-		PathNode p4 = new PathNode();
-		p4.pos = v4;
+			GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			sphere.transform.position = kohonen[i];
+			sphere.transform.localScale = new Vector3(10, 0.1f, 10);
 
-		path.nodes.Add(p1);
-		path.nodes.Add(p2);
-		path.nodes.Add(p3);
-		path.nodes.Add(p4);
+			Debug.Log(kohonen[i]);
+		}
 
-		Debug.Log("Path david");
+
 	}
 
 	void MakePointPath()

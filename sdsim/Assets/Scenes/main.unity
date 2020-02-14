@@ -2511,7 +2511,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sensorCam: {fileID: 750662189}
-  width: 512
+  width: 256
   height: 256
 --- !u!20 &750662189
 Camera:
@@ -5344,7 +5344,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sensorCam: {fileID: 1161699631}
-  width: 512
+  width: 256
   height: 256
 --- !u!1 &1734817940
 GameObject:
