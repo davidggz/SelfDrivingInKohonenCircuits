@@ -47,6 +47,7 @@ namespace tk
 
         void Awake()
         {
+			// Se obtiene el coche
             car = carObj.GetComponent<ICar>();
             client = GetComponent<tk.JsonTcpClient>();
 		    pm = GameObject.FindObjectOfType<PathManager>();
@@ -64,6 +65,7 @@ namespace tk
 
         void Initcallbacks()
         {
+			// Aquí se asignan los callbacks a cada uno de los eventos.
             client.dispatcher.Register("control", new tk.Delegates.OnMsgRecv(OnControlsRecv));
             client.dispatcher.Register("exit_scene", new tk.Delegates.OnMsgRecv(OnExitSceneRecv));
             client.dispatcher.Register("reset_car", new tk.Delegates.OnMsgRecv(OnResetCarRecv));
@@ -89,7 +91,9 @@ namespace tk
             Disconnect();
             Connect();
         }
+		
 
+		// Función encargada de enviar los datos correspondientes al servidor.
         void SendTelemetry()
         {
             JSONObject json = new JSONObject(JSONObject.Type.OBJECT);
@@ -109,7 +113,7 @@ namespace tk
             json.AddField("pos_z", tm.position.z.ToString().Replace(',', '.'));
 
             json.AddField("time", Time.timeSinceLevelLoad.ToString().Replace(',', '.'));
-			Debug.Log(car.GetVelocity().magnitude);
+			//Debug.Log(car.GetVelocity().magnitude);
 
             if(pm != null)
             {
@@ -125,7 +129,7 @@ namespace tk
                 }
             }
 
-			print(json);
+			//print(json);
 
             client.SendMsg( json );
 		}
@@ -253,6 +257,7 @@ namespace tk
         // Update is called once per frame
         void Update () 
         {    
+			// Si no está conectado, se conecta.
             if(state == State.UnConnected)
             {
                 timer += Time.deltaTime;
@@ -268,6 +273,7 @@ namespace tk
                     }
                 }
             }
+			// Una vez conectado, se pone en estado Telemetry y comienza a enviar mensajes.
             else if(state == State.SendTelemetry)
             {
                 if (bResetCar)
@@ -276,7 +282,6 @@ namespace tk
                     pm.path.ResetActiveSpan();
                     bResetCar = false;
                 }
-
 
                 timeSinceLastCapture += Time.deltaTime;
 

@@ -167,21 +167,52 @@ public class PathManager : MonoBehaviour {
 
 	void MakeDavidPath()
 	{
+
+		// FALTA ROTAR EL COCHE
 		path = new CarPath();
-		int numPoints = 20;
+
+		//Posición inicial. La necesitamos para que el coche siempre
+		//salga en el circuito.
+		Vector3 s = new Vector3(50, 0, 50);
+
+		// Este es el número de ciudades
+		int numPoints = 100;
 		Vector3[] kohonen = Kohonen.KohonenMain(numPoints);
-		for (int i = 0; i < numPoints; i++)
+
+		int longKohonen = kohonen.Length;
+
+		// Se comprueba cuánto hay que avanzar con el primer punto para
+		// que el circuito aparezca donde aparece el coche y se itera
+		// por todos los puntos para hacer la misma transformación.
+		Vector3 difIni = s - kohonen[0];
+		for(int punto = 0; punto < kohonen.Length; punto++)
 		{
+			kohonen[punto][0] += difIni[0];
+			kohonen[punto][2] += difIni[2];
+		}
+
+		/* Se introducen los puntos que nos da Kohonen en el 
+		 * path para que el RoadBuilder pueda crear la carretera*/
+		for (int i = 0; i < longKohonen; i++)
+		{
+			Vector3 posicion = kohonen[i];
 			PathNode p = new PathNode();
-			p.pos = kohonen[i];
+			p.pos = posicion;
 			path.nodes.Add(p);
 
-			GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			/*GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 			sphere.transform.position = kohonen[i];
-			sphere.transform.localScale = new Vector3(10, 0.1f, 10);
+			sphere.transform.localScale = new Vector3(10, 0.1f, 10);*/
 
-			Debug.Log(kohonen[i]);
+			//Debug.Log(kohonen[i]);
 		}
+
+		/* Pongo al final el punto inicial para que
+		 * se genere un ciclo y tenga forma de circuito cerrado*/
+		Vector3 inicial = kohonen[0];
+		PathNode pInicial = new PathNode();
+		pInicial.pos = inicial;
+		path.nodes.Add(pInicial);
 
 
 	}

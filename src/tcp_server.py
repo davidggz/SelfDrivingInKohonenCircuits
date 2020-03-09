@@ -26,6 +26,7 @@ class IMesgHandler(object):
         pass
 
 
+# HEREDA DEL DISPATCHER
 class SimServer(asyncore.dispatcher):
     """
       Receives network connections and establishes handlers for each client.
@@ -35,6 +36,7 @@ class SimServer(asyncore.dispatcher):
     def __init__(self, address, msg_handler):
         asyncore.dispatcher.__init__(self)
 
+        # Todas estas funciones están heredadas de asyncore.dispatcher
         #create a TCP socket to listen for connections
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -55,6 +57,7 @@ class SimServer(asyncore.dispatcher):
         self.msg_handler = msg_handler
         
 
+    # Esta función es llamada cuando un cliente se intenta conectar al servidor
     def handle_accept(self):
         # Called when a client connects to our socket
         client_info = self.accept()
@@ -64,7 +67,7 @@ class SimServer(asyncore.dispatcher):
         #make a new steering handler to communicate with the client
         SimHandler(sock=client_info[0], msg_handler=self.msg_handler)
         
-    
+    # Esta función es llamada cuando se hace el shutdown del server
     def handle_close(self):
         print("server shutdown")
         # Called then server is shutdown
@@ -98,7 +101,7 @@ class SimHandler(asyncore.dispatcher):
         #and image bytes is an empty list of partial bytes of the image as it comes in
         self.data_to_read = []
 
-    
+    """Esta función se llama en cada loop"""
     def writable(self):
         """
           We want to write if we have received data.
@@ -143,6 +146,7 @@ class SimHandler(asyncore.dispatcher):
         """
 
         #receive a chunk of data with the max size chunk_size from our client.
+        # Lee los datos correspondientes
         data = self.recv(self.chunk_size)
         
         if len(data) == 0:
@@ -153,6 +157,7 @@ class SimHandler(asyncore.dispatcher):
         self.data_to_read.append(data.decode("utf-8"))
 
         messages = ''.join(self.data_to_read).split('\n')
+        print(messages)
         
         self.data_to_read = []
 

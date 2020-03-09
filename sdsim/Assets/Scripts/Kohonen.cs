@@ -1,21 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;public static class Kohonen{	public static Vector3 car1InitialPos = new Vector3(50, 0, 50);	public static int rangePoints = 300;	public static Vector3[] genRandomPoints(int numElem)
+using UnityEngine;public static class Kohonen{	public static Vector3 car1InitialPos = new Vector3(50, 0.5f, 50);	public static int rangePoints = 300;	public static Texture2D cityColor = (Texture2D)Resources.Load("city");	public static Vector3[] genRandomPoints(int numElem)
 	{
 		Vector3[] randPoints = new Vector3[numElem];
 
 		for(int i = 0; i < randPoints.Length; i++)
 		{
 			randPoints[i] = randomPosition();
-			/*GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-			sphere.transform.position = randPoints[i];
-			sphere.transform.localScale = new Vector3(10, 0.1f, 10);*/
+			GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			/*sphere.transform.position = randPoints[i];
+			sphere.transform.localScale = new Vector3(10, 0.6f, 10);
+			sphere.GetComponent<Renderer>().material.mainTexture = cityColor;*/
 		}
-
-		/*randPosition[0] = UnityEngine.Random.Range(fromXSpread, toXSpread);
-		randPosition[1] = itemYSpread;
-		randPosition[2] = UnityEngine.Random.Range(fromZSpread, toZSpread);*/
 		return randPoints;
 	}	public static Vector3[] generate_network(int size)
 	{
@@ -30,9 +27,8 @@ using UnityEngine;public static class Kohonen{	public static Vector3 car1Ini
 	{
 		Vector3[] problem = genRandomPoints(points);
 
-		//Me hace falta normalizar?? No creo.
-
-		return SOM(problem, 5);
+		// Aquí se introducen las iteraciones
+		return SOM(problem, 4000);
 	}	public static Vector3[] SOM(Vector3[] problem, int iterations, double learning_rate = 0.8)
 	{
 		// El numero de neuronas es 8 veces el numero de puntos que haya en el mapa
@@ -43,12 +39,14 @@ using UnityEngine;public static class Kohonen{	public static Vector3 car1Ini
 
 		for(int i = 0; i < network.Length; i++)
 		{
-			Debug.Log(network[i]);
+			//Debug.Log(network[i]);
 			/*GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 			sphere.transform.position = network[i];
 			sphere.transform.localScale = new Vector3(10, 0.1f, 10);*/
 		}
 		Debug.Log("Red de " + network.Length + " neuronas creada.");
+
+		double vecindario = (double)nNeuronas;
 
 		for(int i = 0; i < iterations; i++)
 		{
@@ -56,27 +54,38 @@ using UnityEngine;public static class Kohonen{	public static Vector3 car1Ini
 			{
 				Debug.Log("\t> Iteration " + i + "/" + iterations);
 			}
-			//Elige una ciudad aleatoria
-			Vector3 city = problem[UnityEngine.Random.Range(0, problem.Length)];
-
-			int winnerInd = distance.select_closest(network, city);
-
-			// Genera la gaussiana que se aplica a todas las neuronas cercanas al ganador
-			double[] gaussian = get_neighborhood(winnerInd, (int)nNeuronas / (int)10, network.Length);
-
-			Vector3 distanciaXZ;
-			// Paralelizable
-			for(int n = 0; n < network.Length; n++)
+			// Itero por todas las ciudades
+			for (int ciudadIndex = 0; ciudadIndex < problem.Length; ciudadIndex++)
 			{
-				distanciaXZ = network[n] - city;
-				network[n] += distanciaXZ * (float)gaussian[n] * (float)learning_rate;
+				//Elige una ciudad aleatoria
+				Vector3 city = problem[ciudadIndex];
+				//Debug.Log("Ciudad ganadora: " + city);
+
+				int winnerInd = distance.select_closest(network, city);
+				/*Debug.Log("Winner index: " + winnerInd);
+				Debug.Log("Winner position: " + network[winnerInd]);*/
+
+				// Genera la gaussiana que se aplica a todas las neuronas cercanas al ganador
+				double[] gaussian = get_neighborhood(winnerInd, vecindario / 10, network.Length);
+				/*for (int p = 0; p < gaussian.Length; p++)
+				{
+					Debug.Log("Gaussian: " + gaussian[p]);
+				}
+				Debug.Log("Winner: " + winnerInd);*/
+				Vector3 distanciaXZ;
+				// Paralelizable
+				for (int n = 0; n < network.Length; n++)
+				{
+					distanciaXZ = city - network[n];
+					network[n] += distanciaXZ * (float)gaussian[n] * (float)learning_rate;
+				}
 			}
 
-			learning_rate = learning_rate * 0.99997;
+			learning_rate = learning_rate * 0.6;
 			//No se si esto es asi.
-			nNeuronas = (int) (nNeuronas * 0.9997);
+			vecindario = vecindario * 0.75;
 
-			if(nNeuronas < 1)
+			if(vecindario < 1)
 			{
 				Debug.Log("El radio ha caido completamente. Finalizando ejecucion. ");
 				break;
@@ -90,7 +99,7 @@ using UnityEngine;public static class Kohonen{	public static Vector3 car1Ini
 		}
 
 		return network;
-	}	public static double[] get_neighborhood(int center, int radix, int domain)
+	}	public static double[] get_neighborhood(int center, double radix, int domain)
 	{
 		if (radix < 1){
 			radix = 1;

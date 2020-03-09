@@ -285,9 +285,9 @@ public class Logger : MonoBehaviour {
 		{
 			// El nombre aquí es problemático ya que contiene la carpeta IMG. 
 			// Para que funcione se debe crear esta carpeta.
-			return GetLogPath() + string.Format("IMG/road_{0,8:D8}.png", frameCounter);
+			return GetLogPath() + string.Format("IMG/road_{0,8:D8}.jpg", frameCounter);
 		} else {
-			return GetLogPath() + string.Format("IMG2/road_{0,8:D8}.png", frameCounter);
+			return GetLogPath() + string.Format("IMG2/road_{0,8:D8}.jpg", frameCounter);
 		}
 	}
 
@@ -332,6 +332,8 @@ public class Logger : MonoBehaviour {
 				ij.filename = GetUdacityStyleImageFilename();
 
 				// Se codifica la imagen como JPG
+				//ij.bytes = image.EncodeToJPG();
+				// Se codifica la imagen como PNG
 				ij.bytes = image.EncodeToPNG();
 
 				if (nPhotos == 2)
@@ -339,6 +341,8 @@ public class Logger : MonoBehaviour {
 					ij2.filename = GetUdacityStyleImageFilename(2);
 
 					// Se codifica la imagen como JPG
+					//ij2.bytes = image2.EncodeToJPG();
+					// Se codifica la imagen como PNG
 					ij2.bytes = image2.EncodeToPNG();
 				}
 			}

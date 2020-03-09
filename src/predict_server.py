@@ -92,9 +92,15 @@ class DonkeySimMsgHandler(IMesgHandler):
     
     def parse_outputs(self, outputs):
         res = []
-        for output in outputs:            
+        print("Outputs")
+        print(outputs)
+        for output in outputs:     
+            print("output")       
+            print(output)
             for i in range(output.shape[0]):
                 res.append(output[i])
+        print("Res")
+        print(res)
 
         self.on_parsed_outputs(res)
         
@@ -158,6 +164,7 @@ def go(filename, address, constant_throttle=0, num_cars=1, image_cb=None, rand_s
     model.compile("sgd", "mse")
   
     #setup the server
+    # Se crea el handler. El handler contiene todos los Callback dependiendo del mensaje que reciba.
     handler = DonkeySimMsgHandler(model, constant_throttle, port=address[1], num_cars=num_cars, image_cb=image_cb, rand_seed=rand_seed)
     server = SimServer(address, handler)
 

@@ -44,15 +44,22 @@ namespace tk
         void Awake()
         {
             recv_packets = new List<string>();
+			// Se inicializa el dispatcher
             dispatcher = new tk.Dispatcher();
             dispatcher.Init();
+
+			// Se utiliza la clase TcpClient
             client = GetComponent<tk.TcpClient>();
             
+			// Se llama a la función Initcallbacks para inicializar el callback que se produce
+			// al recibir un mensaje en la clase TcpClient
             Initcallbacks();
         }
 
         void Initcallbacks()
         {
+			// Se le pone al delegate de la clase TcpClient, la función 
+			// OnDataRecv de esta clase.
             client.onDataRecvCB += new TcpClient.OnDataRecv(OnDataRecv);
         }
 
@@ -83,15 +90,18 @@ namespace tk
 
         void OnDataRecv(byte[] bytes)
         {
+			// Se coge un string a partir de los bytes que se reciben
             string str = System.Text.Encoding.UTF8.GetString(bytes);
             
             lock(_locker)
             {
+				// Se guarda el string en la lista recv_packets
                 recv_packets.Add(str);
             }
 
             if(!dispatchInMainThread)
             {
+				// Se llama a la función Dispatch de esta misma clase
                 Dispatch();
             }
         }
@@ -100,14 +110,21 @@ namespace tk
         {
             lock(_locker)
             {
+				// Se itera dentro de cada paquete dentro de recv_packets
                 foreach(string str in recv_packets)
                 {
                     try
                     {
+						// Se transforma en JSON
                         JSONObject j = new JSONObject(str);
 
+						// Se coge el tipo de mensaje
                         string msg_type = j["msg_type"].str;
 
+						// Se hace el dipatch dentro de la funcion dispatcher
+						// teniendo en cuenta el tipo de mensaje y enviando el JSON.
+						// En el dispatcher se invoca la función correspondiente del diccionario
+						// de TCP Handler.
                         dispatcher.Dipatch(msg_type, j);
 
                     }

@@ -4,11 +4,20 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 
+// Parece que esta es la clase con la mayor parte de la lógica del servidor.
+// Por lo menos del lado cliente.
+
 namespace tk
 {
 public class TcpClient : MonoBehaviour {
 
+	/* La inicialización del socket es lo que determina qué va a poder hacer el servidor.
+	 * InterNetwork solo hace referencia al tipo de IP que se va a utilizar.
+	 * Stream tiene que ver con qué tipo de mensajes se pueden enviar (puede ser importante)
+	 * El protocolo también es importante, puede que interese usar UDP.*/
 	private Socket _clientSocket = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
+
+	/* Buffer en el que se van recibiendo los datos.*/
 	private byte[] _recieveBuffer = new byte[8142];
 
 	public delegate void OnDataRecv(byte[] data);
@@ -66,7 +75,6 @@ public class TcpClient : MonoBehaviour {
 		byte[] recData = new byte[recieved];
 		Buffer.BlockCopy(_recieveBuffer,0,recData,0,recieved);
 
-		Debug.Log("puta");
 		//Process data here the way you want , all your bytes will be stored in recData
 		if(onDataRecvCB != null)
 			onDataRecvCB.Invoke(recData);
