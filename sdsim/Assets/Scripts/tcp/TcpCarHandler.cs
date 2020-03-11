@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using System.Globalization;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using System.IO;
 
 
 namespace tk
@@ -15,6 +16,8 @@ namespace tk
     [RequireComponent(typeof(tk.JsonTcpClient))]
 
     public class TcpCarHandler : MonoBehaviour {
+
+		public GameObject imagenObj;
 
         public GameObject carObj;
         public ICar car;
@@ -26,7 +29,7 @@ namespace tk
         float timer = 0.0f;
         public Text ai_text;
         
-        public float limitFPS = 20.0f;
+        public float limitFPS = 0.5f;
         float timeSinceLastCapture = 0.0f;
 
         float ai_steering = 0.0f;
@@ -36,6 +39,9 @@ namespace tk
         bool asynchronous = true;
         float time_step = 0.1f;
         bool bResetCar = false;
+
+		/*Indica si vamos a enviar mensajes de GAN o mensajes para el NNSteering*/
+		public bool ganMode = false;
 
         public enum State
         {
@@ -73,8 +79,8 @@ namespace tk
             client.dispatcher.Register("step_mode", new tk.Delegates.OnMsgRecv(OnStepModeRecv));
             client.dispatcher.Register("quit_app", new tk.Delegates.OnMsgRecv(OnQuitApp));
             client.dispatcher.Register("regen_road", new tk.Delegates.OnMsgRecv(OnRegenRoad));
-
-        }
+			client.dispatcher.Register("GANResult", new tk.Delegates.OnMsgRecv(OnGANResult));
+		}
 
         bool Connect()
         {
@@ -134,7 +140,45 @@ namespace tk
             client.SendMsg( json );
 		}
 
-        void SendCarLoaded()
+		void SendTelemetryGAN()
+		{
+			JSONObject json = new JSONObject(JSONObject.Type.OBJECT);
+			// Escribimos qué tipo de mensaje es
+			json.AddField("msg_type", "telemetryGAN");
+			//Debug.Log(camSensor.GetImageBytes());
+			// Cogemos la imagen directamente de la cámara en bytes.
+			json.AddField("image", System.Convert.ToBase64String(camSensor.GetImageBytes()));
+
+			// Enviamos el mensaje.
+			client.SendMsg( json );
+		}
+
+		void OnGANResult(JSONObject json)
+		{
+			Debug.Log("Entrando a OnGANResult");
+			//Debug.Log(json);
+
+			if (imagenObj.activeSelf == false)
+			{
+				imagenObj.SetActive(true);
+			}
+
+			Texture2D newImg = new Texture2D(1, 1);
+			Byte[] imagenBytes = System.Convert.FromBase64String(json["image"].str);
+			newImg.LoadImage(imagenBytes);
+			newImg.Apply();
+
+			Sprite newSprite = Sprite.Create(newImg, new Rect(0, 0, newImg.width, newImg.height), new Vector2(0.5f, 0.5f));
+
+			imagenObj.GetComponent<Image>().sprite = newSprite;
+
+			/*Debug.Log(imagenBytes);
+			File.WriteAllBytes("C:/Users/david/Desktop/recibido/hola.png", imagenBytes);
+			Debug.Log(imagenBytes);*/
+
+		}
+
+		void SendCarLoaded()
         {
             JSONObject json = new JSONObject(JSONObject.Type.OBJECT);
             json.AddField("msg_type", "car_loaded");
@@ -276,6 +320,8 @@ namespace tk
 			// Una vez conectado, se pone en estado Telemetry y comienza a enviar mensajes.
             else if(state == State.SendTelemetry)
             {
+				// No entiendo muy bien esto, pero se supone que resetea el coche,
+				// así que no voy a tocarlo.
                 if (bResetCar)
                 {
                     car.RestorePosRot();
@@ -284,15 +330,24 @@ namespace tk
                 }
 
                 timeSinceLastCapture += Time.deltaTime;
+				/*Con esta condición se limita el número de FPS*/
+				if (timeSinceLastCapture > 1.0f / limitFPS)
+				{
+					/*Dependiendo del modo en el que estemos, hacemos unas cosas u otras.*/
+					if (ganMode == false)
+					{
+						timeSinceLastCapture -= (1.0f / limitFPS);
+						SendTelemetry();
 
-                if (timeSinceLastCapture > 1.0f / limitFPS)
-                {
-                    timeSinceLastCapture -= (1.0f / limitFPS);
-                    SendTelemetry();
-                }
-                
-                if(ai_text != null)
-                    ai_text.text = string.Format("NN: {0} : {1}", ai_steering, ai_throttle);
+						if (ai_text != null)
+							ai_text.text = string.Format("NN: {0} : {1}", ai_steering, ai_throttle);
+					}
+					else
+					{
+						timeSinceLastCapture -= (1.0f / limitFPS);
+						SendTelemetryGAN();
+					}
+				}
                     
             }
         }

@@ -92,8 +92,8 @@ namespace tk
         {
 			// Se coge un string a partir de los bytes que se reciben
             string str = System.Text.Encoding.UTF8.GetString(bytes);
-            
-            lock(_locker)
+
+			lock (_locker)
             {
 				// Se guarda el string en la lista recv_packets
                 recv_packets.Add(str);

@@ -12,7 +12,9 @@ public class MenuHandler : MonoBehaviour {
 	public GameObject stopPanel;
     public GameObject carJSControl;
 	public GameObject NetworkControl;
-	public GameObject imagenesRealistas;
+
+	public GameObject GANInfere;
+	public GameObject imagenObj;
 
 	public TrainingManager trainingManager;
 	public Logger loggerClass;
@@ -77,8 +79,7 @@ public class MenuHandler : MonoBehaviour {
 		if (carJSControl != null)
 			carJSControl.SetActive(true);
 
-		Logger.SetActive(true);
-		imagenesRealistas.SetActive(true);
+		GANInfere.SetActive(true);
 		menuPanel.SetActive(false);
 		stopPanel.SetActive(true);
 	}
@@ -151,6 +152,8 @@ public class MenuHandler : MonoBehaviour {
 
         Logger.SetActive(false);
         NetworkSteering.SetActive(false);
+		GANInfere.SetActive(false);
+		imagenObj.SetActive(false);
 
 
         menuPanel.SetActive(true);

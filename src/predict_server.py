@@ -23,13 +23,23 @@ from PIL import Image
 from tcp_server import IMesgHandler, SimServer
 import conf
 
+import matplotlib.pyplot as plt
+import cv2
+
+import sys
+sys.path.insert(0, os.getcwd() + '/pix2pixHD')
+
+# Imports para Pix2PixHD
+from pix2pixHD.loadInference import load_Pix2PixHD
+from pix2pixHD.loadInference import infere_Pix2PixHD
+
 class DonkeySimMsgHandler(IMesgHandler):
 
     STEERING = 0
     THROTTLE = 1
 
-    def __init__(self, model, constant_throttle, port=0, num_cars=1, image_cb=None, rand_seed=0):
-        self.model = model
+    def __init__(self, modelDict, constant_throttle, port=0, num_cars=1, image_cb=None, rand_seed=0):
+        self.modelDict = modelDict
         self.constant_throttle = constant_throttle
         self.sock = None
         self.image_folder = None
@@ -42,7 +52,8 @@ class DonkeySimMsgHandler(IMesgHandler):
         self.rand_seed = rand_seed
         self.fns = {'telemetry' : self.on_telemetry,\
                     'car_loaded' : self.on_car_created,\
-                    'on_disconnect' : self.on_disconnect}
+                    'on_disconnect' : self.on_disconnect,\
+                    'telemetryGAN' : self.on_telemetryGAN}
 
     def on_connect(self, socketHandler):
         self.sock = socketHandler
@@ -60,6 +71,65 @@ class DonkeySimMsgHandler(IMesgHandler):
             self.fns[msg_type](message)
         else:
             print('unknown message type', msg_type)
+
+    def on_telemetryGAN(self, data):
+        # Se coge la imagen del mensaje
+        imgString = data["image"]
+        image = Image.open(BytesIO(base64.b64decode(imgString)))
+        image_array = np.asarray(image)
+
+        tamImagenes = (256, 512, 3)
+
+        # Se procesa la imagen
+        label = self.infere_label(image_array, tamImagenes)
+        
+        generada = infere_Pix2PixHD(self.modelDict['ganModel'], label, tamImagenes)
+        generada = generada.tolist()
+        generada = np.asarray(generada, dtype=np.uint8, order='C')
+        
+        #print(generada)
+        #print(generada.shape)
+        print(generada.shape)
+        '''
+        label = np.reshape(label, (256, 512, 1))
+        cv2.imwrite("output/" + 'cola.png', label)
+        '''
+        #print(generada.flags)
+
+        
+        pil_img = Image.fromarray(generada)
+        buff = BytesIO()
+        pil_img.save(buff, format="PNG")
+        new_image_string = base64.b64encode(buff.getvalue()).decode("utf-8") 
+
+        # Se envia la imagen con su respectivo mensaje
+        self.send_GAN_image(new_image_string)
+
+    def infere_label(self, imgArray, tamImagen):
+        # Se normaliza y se cambia el shape de la imagen para poder hacer inferencia.
+        imgArray = imgArray / 255.0
+        imgArray = np.reshape(imgArray, (1, tamImagen[0], tamImagen[1], tamImagen[2]))
+        # Se infiere en el modelo del labeler
+        label = self.modelDict['labelerModel'].predict(imgArray)
+        # Los resultados están normalizados, así que multiplicamos, hacemos un redondeo
+        # y casteamos todos los valores a int de 8 bits.
+        label = label * 255
+        label = np.around(label)
+        label = label.astype(np.uint8)
+
+        '''
+        # PIL necesita al menos 3 canales para poder codificar como PNG, asi que 
+        # con este codigo duplicamos el canal en 3 por si hay que utilizar la imagen.
+        label = np.reshape(label, (tamImagen[0], tamImagen[1]))
+        label = np.stack((label,)*3, axis=-1)
+        '''
+
+        return label
+
+    def send_GAN_image(self, GANImage):
+        msg = { 'msg_type' : 'GANResult', 'image': GANImage}
+        #print(msg)
+        self.sock.queue_message(msg)
 
     def on_car_created(self, data):
         if self.rand_seed != 0:
@@ -87,7 +157,7 @@ class DonkeySimMsgHandler(IMesgHandler):
 
 
     def predict(self, image_array):
-        outputs = self.model.predict(image_array[None, :, :, :])
+        outputs = self.modelDict['steeringModel'].predict(image_array[None, :, :, :])
         self.parse_outputs(outputs)
     
     def parse_outputs(self, outputs):
@@ -155,7 +225,7 @@ class DonkeySimMsgHandler(IMesgHandler):
         pass
 
 
-def go(filename, address, constant_throttle=0, num_cars=1, image_cb=None, rand_seed=None):
+def goAntiguo(filename, address, constant_throttle=0, num_cars=1, image_cb=None, rand_seed=None):
 
     # Carga de la red de neuronas o del modelo que sea
     model = load_model(filename)
@@ -175,10 +245,49 @@ def go(filename, address, constant_throttle=0, num_cars=1, image_cb=None, rand_s
         #unless some hits Ctrl+C and then we get this interrupt
         print('stopping')
 
+def go(modelosName, address, constant_throttle=0, num_cars=1, image_cb=None, rand_seed=None):
+
+    steeringModel = None
+    ganModel = None
+    labelerModel = None
+
+    # Carga de los modelos necesarios para hacer inferencia
+    if modelosName['steeringModel'] != None:
+        steeringModel = load_model(modelosName['steeringModel'])
+        steeringModel.compile("sgd", "mse")
+
+    if modelosName['GAN'] != None:
+        os.chdir('./pix2pixHD')
+        ganModel = load_Pix2PixHD(modelosName['GAN'])
+        #ganModel.compile("sgd", "mse")
+        os.chdir('../')
+        
+    if modelosName['labeler'] != None:
+        labelerModel = load_model('./labeler/' + modelosName['labeler'] + '.h5')
+        #labelerModel.compile("sgd", "mse")
+
+    modelDict = {'steeringModel': steeringModel, 'ganModel': ganModel, 'labelerModel': labelerModel}
+    print(modelDict)
+  
+    #setup the server
+    # Se crea el handler. El handler contiene todos los Callback dependiendo del mensaje que reciba.
+    handler = DonkeySimMsgHandler(modelDict, constant_throttle, port=address[1], num_cars=num_cars, image_cb=image_cb, rand_seed=rand_seed)
+    server = SimServer(address, handler)
+
+    try:
+        #asyncore.loop() will keep looping as long as any asyncore dispatchers are alive
+        asyncore.loop()
+    except KeyboardInterrupt:
+        #unless some hits Ctrl+C and then we get this interrupt
+        print('stopping')
+
 # ***** main loop *****
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='prediction server')
-    parser.add_argument('--model', type=str, help='model filename')
+    parser.add_argument('--steeringModel', type=str, help='model filename')
+    # Directorio de los dos modelos necesarios para hacer la inferencia en Pix2PixHD
+    parser.add_argument('--GAN', type=str, help='Modelo para generar imagenes realistas. Preparado para Pix2PixHD.')
+    parser.add_argument('--labeler', type=str, help='Modelo para pasar a labels.')
     parser.add_argument('--host', type=str, default='0.0.0.0', help='bind to ip')
     parser.add_argument('--port', type=int, default=9090, help='bind to port')
     parser.add_argument('--num_cars', type=int, default=1, help='how many cars to spawn')
@@ -186,5 +295,8 @@ if __name__ == "__main__":
     parser.add_argument('--rand_seed', type=int, default=0, help='set road generation random seed')
     args = parser.parse_args()
 
+    modelosName = {'steeringModel': args.steeringModel, 'GAN': args.GAN, 'labeler': args.labeler}
+    print(modelosName)
+
     address = (args.host, args.port)
-    go(args.model, address, args.constant_throttle, num_cars=args.num_cars, rand_seed=args.rand_seed)
+    go(modelosName, address, args.constant_throttle, num_cars=args.num_cars, rand_seed=args.rand_seed)

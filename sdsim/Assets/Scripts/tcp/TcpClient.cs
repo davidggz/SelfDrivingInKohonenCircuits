@@ -18,7 +18,7 @@ public class TcpClient : MonoBehaviour {
 	private Socket _clientSocket = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
 
 	/* Buffer en el que se van recibiendo los datos.*/
-	private byte[] _recieveBuffer = new byte[8142];
+	private byte[] _recieveBuffer = new byte[500000];
 
 	public delegate void OnDataRecv(byte[] data);
 
@@ -67,6 +67,7 @@ public class TcpClient : MonoBehaviour {
 	{
 		//Check how much bytes are recieved and call EndRecieve to finalize handshake
 		int recieved = _clientSocket.EndReceive(AR);
+		Debug.Log(recieved);
 
 		if(recieved <= 0)
 			return;

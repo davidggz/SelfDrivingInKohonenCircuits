@@ -48,6 +48,6 @@ public class CameraSensor : MonoBehaviour {
 	// en una red de neuronas y obtener respuestas
 	public byte[] GetImageBytes()
 	{
-		return GetImage().EncodeToJPG();
+		return GetImage().EncodeToPNG();
 	}
 }
