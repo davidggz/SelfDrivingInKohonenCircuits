@@ -172,9 +172,9 @@ namespace tk
 
 			imagenObj.GetComponent<Image>().sprite = newSprite;
 
-			/*Debug.Log(imagenBytes);
-			File.WriteAllBytes("C:/Users/david/Desktop/recibido/hola.png", imagenBytes);
-			Debug.Log(imagenBytes);*/
+			Debug.Log(imagenBytes);
+			File.WriteAllBytes("C:/Users/david/Desktop/recibido/hola.jpg", imagenBytes);
+			Debug.Log(imagenBytes);
 
 		}
 

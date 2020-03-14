@@ -82,7 +82,7 @@ class SimHandler(asyncore.dispatcher):
       Handles messages from a single TCP client.
     """
     
-    def __init__(self, sock, chunk_size=(300*1024), msg_handler=None):
+    def __init__(self, sock, chunk_size=(20*1024), msg_handler=None):
         #we call our base class init
         asyncore.dispatcher.__init__(self, sock=sock)
         
@@ -121,11 +121,11 @@ class SimHandler(asyncore.dispatcher):
           This is only called by async manager when the socket is in a writable state
           and when self.writable return true, that yes, we have data to send.
         """
-        print("Antes del encode")
+        #print("Antes del encode")
         #pop the first element from the list. encode will make it into a byte stream
         #print(self.data_to_write[0])
         data = self.data_to_write.pop(0).encode()
-        print("Despues del encode")
+        #print("Despues del encode")
 
         #send a slice of that data, up to a max of the chunk_size
         sent = self.send(data[:self.chunk_size])
@@ -135,7 +135,7 @@ class SimHandler(asyncore.dispatcher):
             print("SLICING")
             #then slice off the portion that remains to be sent
             remaining = data[sent:]
-            print(remaining)
+            #print(remaining)
 
             #since we've popped it off the list, add it back to the list to send next
             #probably should change this to a deque...
@@ -151,9 +151,8 @@ class SimHandler(asyncore.dispatcher):
 
         #receive a chunk of data with the max size chunk_size from our client.
         # Lee los datos correspondientes
-        tamChunk = 16*1024
-        data = self.recv(tamChunk)
-        print("HOLA")
+        data = self.recv(self.chunk_size)
+        #print("HOLA")
         
         if len(data) == 0:
           #this only happens when the connection is dropped

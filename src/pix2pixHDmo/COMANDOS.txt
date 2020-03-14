@@ -1,0 +1,21 @@
+# Train
+# Este comando ha funcionado con imágenes de 512x256
+python3 train.py --name cityscapes512 --checkpoints_dir checkpoints --dataroot ./datasets/Cityscapes512 --resize_or_crop none --ngf 32 --netG local --no_instance
+
+# Test
+python3 test.py --name Mod1-OnlyCityscapes-512 --results_dir ./results/ --which_epoch latest --netG local --ngf 32 --resize_or_crop none --dataroot ./datasets/Cityscapes512 --how_many 50000 --no_instance
+
+# Testear simulador
+python3 test.py --name Mod1-OnlyCityscapes-512 --results_dir ./results/ --which_epoch latest --netG local --ngf 32 --resize_or_crop none --dataroot ./datasets/Test/SimuladorBienRedimensionadas512 --how_many 50000 --no_instance
+
+--name : Indica donde está el checkpoint que se quiere utilizar para hacer el testeo. En caso de entrenar,
+este parámetro indica en qué carpeta se van a poner los checkpoints y las imagenes de los epoch.
+
+--results_dir : Dónde se va a poner la carpeta con los resultados.
+
+--which_epoch : Indica qué checkpoint se utiliza
+
+--dataroot : Indica el directorio en el que se encuentran las imágenes que se van a utilizar para
+inferir o para entrenar.
+
+mv /home/davidg/DL/GAN/SegToLabels/RedMia/ImagenesSimulador/test_label /home/davidg/DL/GAN/Pix2PixHD/pix2pixHD/datasets/Simulador/

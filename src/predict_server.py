@@ -99,7 +99,7 @@ class DonkeySimMsgHandler(IMesgHandler):
         
         pil_img = Image.fromarray(generada)
         buff = BytesIO()
-        pil_img.save(buff, format="PNG")
+        pil_img.save(buff, format="JPEG")
         new_image_string = base64.b64encode(buff.getvalue()).decode("utf-8") 
 
         # Se envia la imagen con su respectivo mensaje
@@ -162,15 +162,15 @@ class DonkeySimMsgHandler(IMesgHandler):
     
     def parse_outputs(self, outputs):
         res = []
-        print("Outputs")
-        print(outputs)
+        #print("Outputs")
+        #print(outputs)
         for output in outputs:     
-            print("output")       
-            print(output)
+            #print("output")       
+            #print(output)
             for i in range(output.shape[0]):
                 res.append(output[i])
-        print("Res")
-        print(res)
+        #print("Res")
+        #print(res)
 
         self.on_parsed_outputs(res)
         
@@ -267,7 +267,7 @@ def go(modelosName, address, constant_throttle=0, num_cars=1, image_cb=None, ran
         #labelerModel.compile("sgd", "mse")
 
     modelDict = {'steeringModel': steeringModel, 'ganModel': ganModel, 'labelerModel': labelerModel}
-    print(modelDict)
+    #print(modelDict)
   
     #setup the server
     # Se crea el handler. El handler contiene todos los Callback dependiendo del mensaje que reciba.
@@ -296,7 +296,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     modelosName = {'steeringModel': args.steeringModel, 'GAN': args.GAN, 'labeler': args.labeler}
-    print(modelosName)
+    #print(modelosName)
 
     address = (args.host, args.port)
     go(modelosName, address, args.constant_throttle, num_cars=args.num_cars, rand_seed=args.rand_seed)
