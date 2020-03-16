@@ -8,7 +8,10 @@ using UnityEngine.UI;
 using System.Globalization;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using System.Linq;
 using System.IO;
+using System.Text;
+using System.Drawing;
 
 
 namespace tk
@@ -42,8 +45,24 @@ namespace tk
 
 		/*Indica si vamos a enviar mensajes de GAN o mensajes para el NNSteering*/
 		public bool ganMode = false;
+		byte[] image64;
+		bool InferenciaComenzada = false;
 
-        public enum State
+		//string dirEntrega = "C:/Users/david/Documents/Projects/drivingSimulator/src/ENTREGA/";
+		//string dirEnvio = "C:/Users/david/Documents/Projects/drivingSimulator/src/ENVIO/";
+		string dirEntrega = Path.Combine(Directory.GetCurrentDirectory(), "../src/ENTREGA/");
+		string dirEnvio = Path.Combine(Directory.GetCurrentDirectory(), "../src/ENVIO/");
+
+		bool recogiendo = false;
+		bool enviando = false;
+		bool mensajeEnviado = false;
+		int contadorEnviadas = 0;
+		int contadorRecogidas = 0;
+		byte[] fileData;
+
+
+
+		public enum State
         {
             UnConnected,
             SendTelemetry
@@ -67,7 +86,35 @@ namespace tk
         void Start()
         {
             Initcallbacks();
+			if(ganMode == true)
+			{
+				createDirs();
+			}
         }
+
+		void createDirs()
+		{
+			DirectoryInfo dirInfo;
+			if (Directory.Exists(dirEnvio) == false) {
+				Directory.CreateDirectory(dirEnvio);
+			} else {
+				dirInfo = new DirectoryInfo(dirEnvio);
+				foreach (FileInfo file in dirInfo.GetFiles())
+				{
+					file.Delete();
+				}
+			}
+
+			if (Directory.Exists(dirEntrega) == false) {
+				Directory.CreateDirectory(dirEntrega);
+			} else {
+				dirInfo = new DirectoryInfo(dirEntrega);
+				foreach (FileInfo file in dirInfo.GetFiles())
+				{
+					file.Delete();
+				}
+			}
+		}
 
         void Initcallbacks()
         {
@@ -140,42 +187,22 @@ namespace tk
             client.SendMsg( json );
 		}
 
-		void SendTelemetryGAN()
+		void comenzarEnvio()
 		{
-			JSONObject json = new JSONObject(JSONObject.Type.OBJECT);
-			// Escribimos qué tipo de mensaje es
-			json.AddField("msg_type", "telemetryGAN");
-			//Debug.Log(camSensor.GetImageBytes());
-			// Cogemos la imagen directamente de la cámara en bytes.
-			json.AddField("image", System.Convert.ToBase64String(camSensor.GetImageBytes()));
-
-			// Enviamos el mensaje.
-			client.SendMsg( json );
+			enviando = true;
 		}
 
 		void OnGANResult(JSONObject json)
 		{
-			Debug.Log("Entrando a OnGANResult");
-			//Debug.Log(json);
-
+			Debug.Log("ONGANRESULT");
 			if (imagenObj.activeSelf == false)
 			{
 				imagenObj.SetActive(true);
+				Debug.Log("Activando imagenes");
 			}
 
-			Texture2D newImg = new Texture2D(1, 1);
-			Byte[] imagenBytes = System.Convert.FromBase64String(json["image"].str);
-			newImg.LoadImage(imagenBytes);
-			newImg.Apply();
-
-			Sprite newSprite = Sprite.Create(newImg, new Rect(0, 0, newImg.width, newImg.height), new Vector2(0.5f, 0.5f));
-
-			imagenObj.GetComponent<Image>().sprite = newSprite;
-
-			Debug.Log(imagenBytes);
-			File.WriteAllBytes("C:/Users/david/Desktop/recibido/hola.jpg", imagenBytes);
-			Debug.Log(imagenBytes);
-
+			//Comenzamos a recoger imagenes
+			recogiendo = true;
 		}
 
 		void SendCarLoaded()
@@ -297,10 +324,57 @@ namespace tk
         {
             Application.Quit();
         }
-        
-        // Update is called once per frame
-        void Update () 
-        {    
+
+		void OnDestroy()
+		{
+			Shutdown();
+		}
+
+		void OnDisable()
+		{
+			Shutdown();
+		}
+
+		void Shutdown()
+		{
+			DirectoryInfo dirEntregas = new DirectoryInfo(dirEnvio);
+			dirEntregas.Delete(true);
+			DirectoryInfo dirEnvios = new DirectoryInfo(dirEntrega);
+			dirEnvios.Delete(true);
+		}
+
+		void recogerImagenes()
+		{
+			DirectoryInfo dir = new DirectoryInfo(dirEntrega);
+			if (dir.GetFiles().Length > 1)
+			{
+				//string firstFileName = dir.GetFiles().Select(fi => fi.Name).FirstOrDefault();
+				string firstFileName = "ENTREGA_" + contadorRecogidas + ".jpg";
+
+				Texture2D newImg = new Texture2D(1, 1);
+				fileData = File.ReadAllBytes(Path.Combine(dirEntrega, firstFileName));
+				File.Delete(Path.Combine(dirEntrega, firstFileName));
+
+				newImg.LoadImage(fileData);
+				newImg.Apply();
+
+				Sprite newSprite = Sprite.Create(newImg, new Rect(0, 0, newImg.width, newImg.height), new Vector2(0.5f, 0.5f));
+				imagenObj.GetComponent<Image>().sprite = newSprite;
+
+				if(contadorRecogidas == 0)
+				{
+					contadorRecogidas = 1;
+				} else {
+					contadorRecogidas = 0;
+				}
+			}
+		}
+
+		// Update is called once per frame
+		void Update () 
+        {
+			Debug.Log(Directory.GetCurrentDirectory());
+
 			// Si no está conectado, se conecta.
             if(state == State.UnConnected)
             {
@@ -345,7 +419,56 @@ namespace tk
 					else
 					{
 						timeSinceLastCapture -= (1.0f / limitFPS);
-						SendTelemetryGAN();
+						image64 = camSensor.GetImageBytes();
+
+						if (recogiendo == true)
+						{
+							recogiendo = false;
+							InvokeRepeating("recogerImagenes", 0, 0.09f);
+						}
+
+						if (enviando == true)
+						{
+							DirectoryInfo dir = new DirectoryInfo(dirEnvio);
+							if (dir.GetFiles().Length < 2) {
+								Debug.Log(Path.Combine(dirEnvio, "ENVIO_" + contadorEnviadas + ".png"));
+								try
+								{
+									File.WriteAllBytes(Path.Combine(dirEnvio, "ENVIO_" + contadorEnviadas + ".png"), image64);
+								}
+								catch
+								{
+									Debug.Log("Fallo al guardar las imagenes");
+								}
+
+								//Thread.Sleep(1000);
+								if (contadorEnviadas == 0){
+									contadorEnviadas = 1;
+								} else {
+									contadorEnviadas = 0;
+								}
+							}
+
+							if (mensajeEnviado == false)
+							{
+								mensajeEnviado = true;
+								/*AVISAMOS DE QUE VAMOS A COMENZAR A ENVIAR IMAGENES ENVIANDO UN MENSAJE*/
+								JSONObject json = new JSONObject(JSONObject.Type.OBJECT);
+								// Escribimos qué tipo de mensaje es para que sea identificado por el server.
+								json.AddField("msg_type", "telemetryGAN");
+
+								// Enviamos el mensaje.
+								client.SendMsg(json);
+							}
+						}
+
+						if (InferenciaComenzada == false)
+						{
+							Debug.Log("Comenzamos inferencia.");
+							InferenciaComenzada = true;
+							comenzarEnvio();
+						}
+
 					}
 				}
                     

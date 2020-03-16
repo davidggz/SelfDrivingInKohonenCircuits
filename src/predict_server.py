@@ -26,17 +26,36 @@ import conf
 import matplotlib.pyplot as plt
 import cv2
 
+import time
+
+# Imports para Pix2PixHD
 import sys
 sys.path.insert(0, os.getcwd() + '/pix2pixHD')
 
-# Imports para Pix2PixHD
 from pix2pixHD.loadInference import load_Pix2PixHD
 from pix2pixHD.loadInference import infere_Pix2PixHD
+
+from skimage.io import imread
+import re
 
 class DonkeySimMsgHandler(IMesgHandler):
 
     STEERING = 0
     THROTTLE = 1
+    
+    listaColores = np.uint8([[
+        (129, 65, 129),     # Carretera
+        (107, 142, 35),     # Arbol
+        (152, 251, 152),    # Cesped
+        (70, 130, 180)      # Cielo
+    ]])
+
+    listaLabels = [
+        (7, 7, 7),      # Carretera
+        (21, 21, 21),   # Arbol
+        (22, 22, 22),   # Cesped
+        (23, 23, 23)    # Cielo
+    ]
 
     def __init__(self, modelDict, constant_throttle, port=0, num_cars=1, image_cb=None, rand_seed=0):
         self.modelDict = modelDict
@@ -54,6 +73,8 @@ class DonkeySimMsgHandler(IMesgHandler):
                     'car_loaded' : self.on_car_created,\
                     'on_disconnect' : self.on_disconnect,\
                     'telemetryGAN' : self.on_telemetryGAN}
+
+        self.listaColores = cv2.cvtColor(self.listaColores, cv2.COLOR_BGR2HSV)
 
     def on_connect(self, socketHandler):
         self.sock = socketHandler
@@ -73,37 +94,73 @@ class DonkeySimMsgHandler(IMesgHandler):
             print('unknown message type', msg_type)
 
     def on_telemetryGAN(self, data):
-        # Se coge la imagen del mensaje
-        imgString = data["image"]
-        image = Image.open(BytesIO(base64.b64decode(imgString)))
-        image_array = np.asarray(image)
 
-        tamImagenes = (256, 512, 3)
+        #fileEnvio = open("C:/Users/david/Documents/Projects/drivingSimulator/src/PIPE_ENVIO.txt", "r")
+        #fileEntrega = open("C:/Users/david/Documents/Projects/drivingSimulator/src/PIPE_ENTREGA.txt", "w")
+        enviado = False
+        dirEnvio = os.path.join(os.getcwd(), "ENVIO")
+        dirEntrega = os.path.join(os.getcwd(), "ENTREGA")
+        contadorEnviadas = 0
 
-        # Se procesa la imagen
-        label = self.infere_label(image_array, tamImagenes)
-        
-        generada = infere_Pix2PixHD(self.modelDict['ganModel'], label, tamImagenes)
-        generada = generada.tolist()
-        generada = np.asarray(generada, dtype=np.uint8, order='C')
-        
-        #print(generada)
-        #print(generada.shape)
-        print(generada.shape)
-        '''
-        label = np.reshape(label, (256, 512, 1))
-        cv2.imwrite("output/" + 'cola.png', label)
-        '''
-        #print(generada.flags)
+        while(True):
+            
+            imgNames = os.listdir(dirEnvio)
+            if len(imgNames) > 1:
+                start = time.time()
+                imgName = "ENVIO_" + str(contadorEnviadas) + ".png"
+                '''
+                # Funcionalidad necesaria si se quiere inferir con la red
+                image = imread(os.path.join(dirEnvio, imgNames[0]))
+                os.remove(os.path.join(dirEnvio, imgNames[0]))
+                image_array = np.array(image)
+                '''
 
-        
-        pil_img = Image.fromarray(generada)
-        buff = BytesIO()
-        pil_img.save(buff, format="JPEG")
-        new_image_string = base64.b64encode(buff.getvalue()).decode("utf-8") 
+                tamImagenes = (256, 512, 3)
 
-        # Se envia la imagen con su respectivo mensaje
-        self.send_GAN_image(new_image_string)
+                # Se procesa la imagen.
+                # La generación de las labels puede hacerse con OpenCV o con la red convolucional
+
+                # label = self.infere_label(image_array, tamImagenes)
+                label = self.toLabel(os.path.join(dirEnvio, imgName))
+                generada = infere_Pix2PixHD(self.modelDict['ganModel'], label, tamImagenes)
+                os.remove(os.path.join(dirEnvio, imgName))
+
+                cv2.imwrite(os.path.join(dirEntrega, "ENTREGA_" + str(contadorEnviadas) +  ".jpg"), generada)
+                if contadorEnviadas == 0:
+                    contadorEnviadas = 1
+                else:
+                    contadorEnviadas = 0
+
+                print("Generando")
+
+                end = time.time()
+                print(end - start)
+                
+                if enviado == False:
+                    self.send_GAN_message()
+                    enviado = True
+            
+    def toLabel(self, path):
+        imgRGB = cv2.imread(path)
+        print(imgRGB)
+        imgHSV = cv2.cvtColor(imgRGB, cv2.COLOR_RGB2HSV)
+
+        for index, color in enumerate(self.listaColores[0]):
+            lowerLimit = color[0] - 10, 0, 0
+            upperLimit = color[0] + 10, 255, 255
+
+            mascara = cv2.inRange(imgHSV, np.uint8(lowerLimit), np.uint8(upperLimit))
+
+            imgRGB[mascara > 0] = self.listaLabels[index]
+
+        imgRGB = imgRGB[:, :, 0]
+        return imgRGB
+
+    def sorted_nicely(self, l ): 
+        """ Sort the given iterable in the way that humans expect.""" 
+        convert = lambda text: int(text) if text.isdigit() else text 
+        alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+        return sorted(l, key = alphanum_key)
 
     def infere_label(self, imgArray, tamImagen):
         # Se normaliza y se cambia el shape de la imagen para poder hacer inferencia.
@@ -126,10 +183,16 @@ class DonkeySimMsgHandler(IMesgHandler):
 
         return label
 
-    def send_GAN_image(self, GANImage):
-        msg = { 'msg_type' : 'GANResult', 'image': GANImage}
-        #print(msg)
-        self.sock.queue_message(msg)
+    def send_GAN_message(self):
+        # Se envía aquí directamente el mansaje en vez de utilizar
+        # las funciones del socket porque así se puede hacer el while(true)
+        msg = { "msg_type" : "GANResult" }
+        json_msg = json.dumps(msg)
+        data = json_msg.encode()
+        sent = self.sock.send(data[:self.sock.chunk_size])
+        print("Enviando")
+
+        #self.sock.queue_message(msg)
 
     def on_car_created(self, data):
         if self.rand_seed != 0:

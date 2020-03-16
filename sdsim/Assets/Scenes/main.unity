@@ -4368,7 +4368,7 @@ MonoBehaviour:
   pm: {fileID: 1539591316}
   camSensor: {fileID: 750662188}
   ai_text: {fileID: 839069919}
-  limitFPS: 2
+  limitFPS: 60
   ganMode: 1
   state: 0
 --- !u!1 &1281027357

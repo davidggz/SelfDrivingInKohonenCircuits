@@ -1,3 +1,5 @@
-from pix2pixHD.PipelineNet import funcionInutil
+import cv2
 
-funcionInutil()
+imagen = cv2.imread("./ENVIO.png")
+
+print(imagen)

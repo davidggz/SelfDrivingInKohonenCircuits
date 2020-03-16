@@ -18,7 +18,7 @@ public class TcpClient : MonoBehaviour {
 	private Socket _clientSocket = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
 
 	/* Buffer en el que se van recibiendo los datos.*/
-	private byte[] _recieveBuffer = new byte[500000];
+	private byte[] _recieveBuffer = new byte[8142];
 
 	public delegate void OnDataRecv(byte[] data);
 
@@ -71,6 +71,8 @@ public class TcpClient : MonoBehaviour {
 
 		if(recieved <= 0)
 			return;
+
+		Debug.Log("CALLBACKRECIBIDO");
 
 		//Copy the recieved data into new buffer , to avoid null bytes
 		byte[] recData = new byte[recieved];

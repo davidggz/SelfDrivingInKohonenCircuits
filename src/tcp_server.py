@@ -82,7 +82,7 @@ class SimHandler(asyncore.dispatcher):
       Handles messages from a single TCP client.
     """
     
-    def __init__(self, sock, chunk_size=(20*1024), msg_handler=None):
+    def __init__(self, sock, chunk_size=(16*1024), msg_handler=None):
         #we call our base class init
         asyncore.dispatcher.__init__(self, sock=sock)
         
