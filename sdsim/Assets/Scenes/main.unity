@@ -278,7 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fff0d08bfd0e46d2abf6e21594718f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roadWidth: 5
+  roadWidth: 4
   roadHeightOffset: -0.47
   roadOffsetW: 2.2
   doFlattenAtStart: 0
@@ -293,11 +293,7 @@ MonoBehaviour:
   iRoadTexture: 0
   roadTextures:
   - {fileID: 2800000, guid: 4ed7599a337042c469729f0daadec82a, type: 3}
-  - {fileID: 2800000, guid: 7e6c18473bcb640aea31fc8e11bc31e1, type: 3}
-  - {fileID: 2800000, guid: d82e04333e4dd464aaf72e160422e14f, type: 3}
-  - {fileID: 2800000, guid: c6464976523804d60a08df8f0db86ad2, type: 3}
-  - {fileID: 2800000, guid: 8920c937d72c7495b9086be82db951d1, type: 3}
-  - {fileID: 2800000, guid: 3ba8d7480476d42a5949d182be76def3, type: 3}
+  - {fileID: 2800000, guid: 4436f791a4aed8a44a7169bc5c3541ed, type: 3}
   roadOffsets:
   - 2
   - 6
@@ -306,10 +302,7 @@ MonoBehaviour:
   - 4.5
   roadWidths:
   - 5
-  - 12
-  - 10
-  - 10
-  - 12
+  - 5
   Deco: {fileID: 943952676}
 --- !u!4 &148377910
 Transform:

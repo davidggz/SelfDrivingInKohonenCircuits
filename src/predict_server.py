@@ -44,17 +44,71 @@ class DonkeySimMsgHandler(IMesgHandler):
     THROTTLE = 1
     
     listaColores = np.uint8([[
-        (129, 65, 129),     # Carretera
-        (107, 142, 35),     # Arbol
-        (152, 251, 152),    # Cesped
-        (70, 130, 180)      # Cielo
+        (0, 0, 0),           # unlabeled
+        (111, 74,  0),      # dynamic
+        ( 81,  0, 81),      # ground
+        (128, 64, 128),     # Carretera
+        (127, 64, 127),     # Carretera
+        (244, 35, 232),     # Sidewalk
+        (250,170,160),      # parking
+        (230,150,140),      # rail trail
+        ( 70, 70, 70),      # building
+        (102,102,156),      # wall
+        (190,153,153),      # fence
+        (180,165,180),      # guard rail
+        (150,100,100),      # bridge
+        (150,120, 90),      # tunnel
+        (153,153,153),      # pole
+        (153,153,153),      # polegroup
+        (250,170, 30),      # traffic light
+        (220,220,  0),      # traffic sign
+        (107, 142, 35),     # Vegetacion (arbol)
+        (152, 251, 152),    # Cesped (terrain)
+        (70, 130, 180),     # Cielo
+        (220, 20, 60),      # Person
+        (255,  0,  0),      # rider
+        (  0, 0, 142),     # car
+        (  0,  0, 70),      # truck
+        (  0, 60, 100),     # bus
+        (  0,  0, 90),      # caravan
+        (  0,  0, 110),     # trailer
+        (  0, 80, 100),     # train
+        (  0,  0, 230),     # motorcycle
+        (119, 11, 32),      # bicycle
     ]])
 
     listaLabels = [
+        (0, 0, 0),      # unlabeled
+        (5, 5, 5),      # dynamic
+        (6, 6, 6),      # ground
         (7, 7, 7),      # Carretera
-        (21, 21, 21),   # Arbol
+        (7, 7, 7),      # Carretera
+        (8, 8, 8),      # Sidewalk
+        (9, 9, 9),      # parking
+        (10, 10, 10),   # rail trail
+        (11, 11, 11),   # building
+        (12, 12, 12),   # wall
+        (13, 13, 13),   # fence
+        (14, 14, 14),   # guard rail
+        (15, 15, 15),   # bridge
+        (16, 16, 16),   # tunnel
+        (17, 17, 17),   # pole
+        (18, 18, 18),   # pole group
+        (19, 19, 19),   # traffic light
+        (20, 20, 20),   # traffic sign
+        (21, 21, 21),   # Vegetacion (arbol)
         (22, 22, 22),   # Cesped
-        (23, 23, 23)    # Cielo
+        (23, 23, 23),   # Cielo
+        (24, 24, 24),   # person
+        (25, 25, 25),   # rider
+        (26, 26, 26),   # car
+        (27, 27, 27),   # truck
+        (28, 28, 28),   # bus
+        (29, 29, 29),   # caravan
+        (30, 30, 30),   # trailer
+        (31, 31, 31),   # train
+        (32, 32, 32),   # motorcycle
+        (33, 33, 33),   # bicycle
     ]
 
     def __init__(self, modelDict, constant_throttle, port=0, num_cars=1, image_cb=None, rand_seed=0):
@@ -117,15 +171,35 @@ class DonkeySimMsgHandler(IMesgHandler):
 
                 tamImagenes = (256, 512, 3)
 
-                # Se procesa la imagen.
+                # Se lee la imagen 
+                imagenEntrada = cv2.imread(os.path.join(dirEnvio, imgName))
+
+                # PROCESAMIENTO DE IMAGEN
+                # Si la carretera es "realista" tenemos que segmentarla.
+                imagenSeg, maskRoad = self.changeRoad(imagenEntrada)
+                cv2.imwrite("C:/Users/david/Desktop/mierda/entrada.png", imagenEntrada) 
+                cv2.imwrite("C:/Users/david/Desktop/mierda/mask.png", maskRoad) 
+
                 # La generación de las labels puede hacerse con OpenCV o con la red convolucional
-
                 # label = self.infere_label(image_array, tamImagenes)
-                label = self.toLabel(os.path.join(dirEnvio, imgName))
+                label = self.toLabel(imagenSeg)
                 generada = infere_Pix2PixHD(self.modelDict['ganModel'], label, tamImagenes)
-                os.remove(os.path.join(dirEnvio, imgName))
 
+
+                entorno = cv2.bitwise_or(generada, generada, mask = maskRoad)
+                cv2.imwrite("C:/Users/david/Desktop/mierda/entorno.png", entorno)
+                maskRoad = cv2.bitwise_not(maskRoad)
+                realRoad = cv2.bitwise_or(imagenEntrada, imagenEntrada, mask = maskRoad)
+                cv2.imwrite("C:/Users/david/Desktop/mierda/realRoad.png", realRoad)
+
+                generada = np.add(realRoad, entorno)
+
+
+                # Se elimina la imagen recien procesada y se escribe el resultado del procesamiento.
+                os.remove(os.path.join(dirEnvio, imgName))
                 cv2.imwrite(os.path.join(dirEntrega, "ENTREGA_" + str(contadorEnviadas) +  ".jpg"), generada)
+
+                # Se cambia el contador para saber qué imagen cong
                 if contadorEnviadas == 0:
                     contadorEnviadas = 1
                 else:
@@ -140,21 +214,39 @@ class DonkeySimMsgHandler(IMesgHandler):
                     self.send_GAN_message()
                     enviado = True
             
-    def toLabel(self, path):
-        imgRGB = cv2.imread(path)
-        print(imgRGB)
-        imgHSV = cv2.cvtColor(imgRGB, cv2.COLOR_RGB2HSV)
+    def toLabel(self, imgRGB):
+        imagen = imgRGB.copy()
+        imgHSV = cv2.cvtColor(imagen, cv2.COLOR_RGB2HSV)
 
         for index, color in enumerate(self.listaColores[0]):
-            lowerLimit = color[0] - 10, 0, 0
-            upperLimit = color[0] + 10, 255, 255
+            lowerLimit = color
+            upperLimit = color
 
             mascara = cv2.inRange(imgHSV, np.uint8(lowerLimit), np.uint8(upperLimit))
 
-            imgRGB[mascara > 0] = self.listaLabels[index]
+            imagen[mascara > 0] = self.listaLabels[index]
 
-        imgRGB = imgRGB[:, :, 0]
-        return imgRGB
+        imagen = imagen[:, :, 0]
+        return imagen
+
+    def changeRoad(self, imgRGB):
+        imagen = imgRGB.copy()
+        imgHSV = cv2.cvtColor(imagen, cv2.COLOR_RGB2HSV)
+
+        for index, color in enumerate(self.listaColores[0]):
+            lowerLimit = color
+            upperLimit = color
+
+            mascara = cv2.inRange(imgHSV, np.uint8(lowerLimit), np.uint8(upperLimit))
+
+            if index == 0:
+                maskGlobal = mascara
+            else:
+                maskGlobal = cv2.bitwise_or(maskGlobal, mascara)
+
+        imagen[maskGlobal <= 0] = (128, 64, 128)
+
+        return imagen, maskGlobal
 
     def sorted_nicely(self, l ): 
         """ Sort the given iterable in the way that humans expect.""" 

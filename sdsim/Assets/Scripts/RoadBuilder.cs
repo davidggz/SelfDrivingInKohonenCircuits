@@ -21,6 +21,7 @@ public class RoadBuilder : MonoBehaviour {
 	// Dentro de su componente RoadBuilder sale un parametro
 	// llamado RoadPrefabMesh que contiene el RoadPrefab a mano.
 	public GameObject roadPrefabMesh;
+	public GameObject roadPrefabMesh2;
 
 	public TerrainToolkit terToolkit;
 
@@ -103,8 +104,13 @@ public class RoadBuilder : MonoBehaviour {
 			//terToolkit.NormaliseTerrain(0.0f, 0.001f, 0.5f);
 		}
 		
-		// go es una copia del RoadPrefab
+		// Si estamos en la primera carretera de la lista 
+		// se pone el road prefab más simple.
 		GameObject go = GameObject.Instantiate(roadPrefabMesh);
+		/*if(iRoadTexture == 0)
+		{
+			go = GameObject.Instantiate(roadPrefabMesh2);
+		}*/
 		// MeshFilter siempre contiene la red en sí.
 		// MeshRenderer contiene como se comporta la red con respecto a la luz.
 		MeshRenderer mr = go.GetComponent<MeshRenderer>();
