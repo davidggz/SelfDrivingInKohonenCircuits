@@ -285,9 +285,9 @@ public class Logger : MonoBehaviour {
 		{
 			// El nombre aquí es problemático ya que contiene la carpeta IMG. 
 			// Para que funcione se debe crear esta carpeta.
-			return GetLogPath() + string.Format("IMG/road_{0,8:D8}.jpg", frameCounter);
+			return GetLogPath() + string.Format("IMG/road_{0,8:D8}.png", frameCounter);
 		} else {
-			return GetLogPath() + string.Format("IMG2/road_{0,8:D8}.jpg", frameCounter);
+			return GetLogPath() + string.Format("IMG2/road_{0,8:D8}.png", frameCounter);
 		}
 	}
 

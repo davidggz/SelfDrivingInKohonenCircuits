@@ -32,6 +32,9 @@ public class RoadBuilder : MonoBehaviour {
 	public float[] roadOffsets;
 	public float[] roadWidths;
 
+	public Texture2D texturaSecundaria;
+	public bool utilizarTexSecundaria;
+
 	Texture2D customRoadTexure;
 
 	GameObject createdRoad;
@@ -132,6 +135,11 @@ public class RoadBuilder : MonoBehaviour {
 		{
 			// Se almacena en t la textura que se va a usar.
 			Texture2D t = roadTextures[iRoadTexture];
+
+			if(utilizarTexSecundaria == true && generateDeco == false)
+			{
+				t = texturaSecundaria;
+			}
 
 			if(mr != null && t != null)
 			{

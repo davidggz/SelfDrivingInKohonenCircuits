@@ -361,6 +361,9 @@ namespace tk
 				Sprite newSprite = Sprite.Create(newImg, new Rect(0, 0, newImg.width, newImg.height), new Vector2(0.5f, 0.5f));
 				imagenObj.GetComponent<Image>().sprite = newSprite;
 
+				if (!imagenObj.activeSelf)
+					imagenObj.SetActive(true);
+
 				if(contadorRecogidas == 0)
 				{
 					contadorRecogidas = 1;

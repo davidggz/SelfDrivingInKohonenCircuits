@@ -8,8 +8,8 @@ using UnityEngine;public static class Kohonen{	public static Vector3 car1Ini
 		for(int i = 0; i < randPoints.Length; i++)
 		{
 			randPoints[i] = randomPosition();
-			GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-			/*sphere.transform.position = randPoints[i];
+			/*GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			sphere.transform.position = randPoints[i];
 			sphere.transform.localScale = new Vector3(10, 0.6f, 10);
 			sphere.GetComponent<Renderer>().material.mainTexture = cityColor;*/
 		}

@@ -6,9 +6,9 @@ from keras.layers.merge import Concatenate
 from keras import backend as K
 
 import tensorflow as tf
-session_config = tf.ConfigProto()
+session_config = tf.compat.v1.ConfigProto()
 session_config.gpu_options.allow_growth = True
-session = tf.Session(config=session_config)
+session = tf.compat.v1.Session(config=session_config)
 
 def slice_batch(x, n_gpus, part):
     sh = K.shape(x)

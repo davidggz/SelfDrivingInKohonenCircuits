@@ -9,7 +9,7 @@ public class DecorationSpreader : MonoBehaviour
 	public int numItemsToSpread = 1000;
 
 	// Posicion inicial del segundo coche
-	public Vector3 car2InitialPos = new Vector3(3000, 0, 50);
+	public Vector3 car2InitialPos = new Vector3(50, 0, 50);
 	public int range = 500;
 
 	public float fromXSpread;

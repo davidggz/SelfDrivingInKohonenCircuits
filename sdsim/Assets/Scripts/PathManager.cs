@@ -101,14 +101,14 @@ public class PathManager : MonoBehaviour {
 		// la carretera mediante roadBuilder
 		if (doBuildRoad && roadBuilder != null)
 		{
-			roadBuilder.InitRoad(path2, true);
-			roadBuilder.InitRoad(path);
+			roadBuilder.InitRoad(path2);
+			roadBuilder.InitRoad(path, true);
 		}
 
 		if (doBuildRoad && semanticSegRoadBuilder != null)
 		{
 			semanticSegRoadBuilder.InitRoad(path);
-			semanticSegRoadBuilder.InitRoad(path);
+			semanticSegRoadBuilder.InitRoad(path2);
 		}
 
 		if (laneChTrainer != null && doChangeLanes)

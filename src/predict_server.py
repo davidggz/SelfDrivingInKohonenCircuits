@@ -176,28 +176,30 @@ class DonkeySimMsgHandler(IMesgHandler):
 
                 # PROCESAMIENTO DE IMAGEN
                 # Si la carretera es "realista" tenemos que segmentarla.
-                imagenSeg, maskRoad = self.changeRoad(imagenEntrada)
-                cv2.imwrite("C:/Users/david/Desktop/mierda/entrada.png", imagenEntrada) 
-                cv2.imwrite("C:/Users/david/Desktop/mierda/mask.png", maskRoad) 
+                #imagenSeg, maskRoad = self.changeRoad(imagenEntrada)
+                #cv2.imwrite("C:/Users/david/Desktop/mierda/entrada.png", imagenEntrada) 
+                #cv2.imwrite("C:/Users/david/Desktop/mierda/mask.png", maskRoad) 
 
                 # La generación de las labels puede hacerse con OpenCV o con la red convolucional
                 # label = self.infere_label(image_array, tamImagenes)
-                label = self.toLabel(imagenSeg)
+                label = self.toLabel(imagenEntrada)
+                print("Hola")
                 generada = infere_Pix2PixHD(self.modelDict['ganModel'], label, tamImagenes)
 
-
+                '''
+                # Codigo para montar la imagen procesada con la carretera de Unity
                 entorno = cv2.bitwise_or(generada, generada, mask = maskRoad)
-                cv2.imwrite("C:/Users/david/Desktop/mierda/entorno.png", entorno)
                 maskRoad = cv2.bitwise_not(maskRoad)
                 realRoad = cv2.bitwise_or(imagenEntrada, imagenEntrada, mask = maskRoad)
-                cv2.imwrite("C:/Users/david/Desktop/mierda/realRoad.png", realRoad)
-
                 generada = np.add(realRoad, entorno)
+                '''
 
 
                 # Se elimina la imagen recien procesada y se escribe el resultado del procesamiento.
                 os.remove(os.path.join(dirEnvio, imgName))
-                cv2.imwrite(os.path.join(dirEntrega, "ENTREGA_" + str(contadorEnviadas) +  ".jpg"), generada)
+
+                image_pil = Image.fromarray(generada)
+                image_pil.save(os.path.join(dirEntrega, "ENTREGA_" + str(contadorEnviadas) +  ".jpg"))
 
                 # Se cambia el contador para saber qué imagen cong
                 if contadorEnviadas == 0:
@@ -226,7 +228,6 @@ class DonkeySimMsgHandler(IMesgHandler):
 
             imagen[mascara > 0] = self.listaLabels[index]
 
-        imagen = imagen[:, :, 0]
         return imagen
 
     def changeRoad(self, imgRGB):

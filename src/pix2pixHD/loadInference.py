@@ -19,6 +19,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2 as cv
 
+import torchvision.transforms as transforms
+from PIL import Image
+
 opt = TestOptions().parse(save=False)
 opt.nThreads = 1   # test code only supports nThreads = 1
 opt.batchSize = 1  # test code only supports batchSize = 1
@@ -39,6 +42,8 @@ def load_Pix2PixHD(nameModel):
     opt.how_many = 50000
     opt.no_instance = True
     opt.verbose = False
+    opt.label_nc = 35
+    opt.resize_or_crop = None
 
     # Cargamos el modelo 
     if not opt.engine and not opt.onnx:
@@ -65,11 +70,29 @@ def get_input(path):
 
     return(img) 
 
-def infere_Pix2PixHD(model, label, tamImagen):
-    label = np.reshape(label, (1, 1, tamImagen[0], tamImagen[1]))
-    label = torch.from_numpy(label)
-    inst = torch.from_numpy(np.array([0]))
+def __make_power_2(img, base, method=Image.BICUBIC):
+    ow = 512
+    oh = 256       
+    h = int(round(oh / base) * base)
+    w = int(round(ow / base) * base)
 
-    generated = model.inference(label, inst, None)
+    if (h == oh) and (w == ow):
+        return img
+    return img.resize((w, h), method)
+
+def infere_Pix2PixHD(model, label, tamImagen):
+    transform = []
+    base = float(2 ** opt.n_downsample_global)
+    base *= (2 ** opt.n_local_enhancers)
+    transform.append(transforms.Lambda(lambda img: __make_power_2(img, base, method=Image.NEAREST)))
+    transform += [transforms.ToTensor()]
+    transform = transforms.Compose(transform)
+    
+    # Se le hace el preprocesamiento a la imagen
+    label = transform(label)*255.0
+
+    label = np.reshape(label, (1, 3, tamImagen[0], tamImagen[1]))
+
+    generated = model.inference(label, None, None)
 
     return util.tensor2im(generated.data[0])

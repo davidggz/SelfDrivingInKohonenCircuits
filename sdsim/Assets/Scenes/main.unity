@@ -289,6 +289,8 @@ MonoBehaviour:
   terrain: {fileID: 0}
   roadPrefabMesh: {fileID: 1121773054233654, guid: da08699e1e14b469d86012dbd9ae3314,
     type: 3}
+  roadPrefabMesh2: {fileID: 1121773054233654, guid: c63f040125b2ce44e8a0f594cd02cb54,
+    type: 3}
   terToolkit: {fileID: 0}
   iRoadTexture: 0
   roadTextures:
@@ -303,6 +305,8 @@ MonoBehaviour:
   roadWidths:
   - 5
   - 5
+  texturaSecundaria: {fileID: 2800000, guid: de984be6f70b27e419fd28ccc2b59343, type: 3}
+  utilizarTexSecundaria: 0
   Deco: {fileID: 943952676}
 --- !u!4 &148377910
 Transform:
@@ -3568,7 +3572,7 @@ MonoBehaviour:
   itemsToPickFrom:
   - {fileID: 100000, guid: 62397e21d4b30a74fa662826eb58ccda, type: 3}
   numItemsToSpread: 10000
-  car2InitialPos: {x: 3000, y: 0, z: 50}
+  car2InitialPos: {x: 50, y: 0, z: 50}
   range: 500
   fromXSpread: 0
   toXSpread: 0
