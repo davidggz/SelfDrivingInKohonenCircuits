@@ -294,8 +294,8 @@ MonoBehaviour:
   terToolkit: {fileID: 0}
   iRoadTexture: 0
   roadTextures:
-  - {fileID: 2800000, guid: 4ed7599a337042c469729f0daadec82a, type: 3}
-  - {fileID: 2800000, guid: 4436f791a4aed8a44a7169bc5c3541ed, type: 3}
+  - {fileID: 2800000, guid: de984be6f70b27e419fd28ccc2b59343, type: 3}
+  - {fileID: 2800000, guid: de984be6f70b27e419fd28ccc2b59343, type: 3}
   roadOffsets:
   - 2
   - 6
@@ -306,7 +306,7 @@ MonoBehaviour:
   - 5
   - 5
   texturaSecundaria: {fileID: 2800000, guid: de984be6f70b27e419fd28ccc2b59343, type: 3}
-  utilizarTexSecundaria: 0
+  utilizarTexSecundaria: 1
   Deco: {fileID: 943952676}
 --- !u!4 &148377910
 Transform:
@@ -4363,7 +4363,7 @@ MonoBehaviour:
   imagenObj: {fileID: 307853584}
   carObj: {fileID: 847032903}
   pm: {fileID: 1539591316}
-  camSensor: {fileID: 750662188}
+  camSensor: {fileID: 1724896662}
   ai_text: {fileID: 839069919}
   limitFPS: 60
   ganMode: 1
@@ -4643,6 +4643,7 @@ MonoBehaviour:
   DonkeyStyle: 0
   DonkeyStyle2: 0
   logDisplay: {fileID: 0}
+  imageCounter: 2718
 --- !u!4 &1432446450
 Transform:
   m_ObjectHideFlags: 0

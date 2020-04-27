@@ -77,7 +77,7 @@ public class MenuHandler : MonoBehaviour {
 			PIDContoller.SetActive(false);
 
 		if (carJSControl != null)
-			carJSControl.SetActive(true);
+			carJSControl.SetActive(false);
 
 		GANInfere.SetActive(true);
 		menuPanel.SetActive(false);

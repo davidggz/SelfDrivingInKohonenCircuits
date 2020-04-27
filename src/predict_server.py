@@ -37,6 +37,11 @@ from pix2pixHD.loadInference import infere_Pix2PixHD
 
 from skimage.io import imread
 import re
+import tensorflow as tf
+
+from keras.backend.tensorflow_backend import set_session
+import gc
+import torch
 
 class DonkeySimMsgHandler(IMesgHandler):
 
@@ -147,6 +152,68 @@ class DonkeySimMsgHandler(IMesgHandler):
         else:
             print('unknown message type', msg_type)
 
+    def recogerLineas(self, image):
+        imgRGB = image.copy()
+        imgPix2PixHD = imgRGB.copy()
+        imgHSV = cv2.cvtColor(imgRGB, cv2.COLOR_RGB2HSV)
+
+        # Eliminación del paisaje exceptuando la carretera y las lineas
+        for index, color in enumerate(self.listaColores[0]):
+            # Se pone como limite superior e inferior el mismo
+            # color para que no coja otros que tengan el mismo HUE.
+            lowerLimit = color[0], color[1], color[2] 
+            upperLimit = color[0], color[1], color[2]
+
+            mascara = cv2.inRange(imgHSV, np.uint8(lowerLimit), np.uint8(upperLimit))
+
+            if index == 0:
+                maskGlobal = mascara
+            else:
+                if self.listaLabels[index] != (7, 7, 7):
+                    maskGlobal = cv2.bitwise_or(maskGlobal, mascara)
+
+        imgRGB[maskGlobal > 0] = (0, 0, 0)
+        #imgHSV = cv2.cvtColor(imgRGB, cv2.COLOR_RGB2HSV)
+
+        # Generamos la imagen de entrada a Pix2PixHD
+        imgPix2PixHD[maskGlobal <= 0] = (128, 64, 128)
+
+        # Generamos la imagen con solo las lineas y su mascara correspondiente
+        imgHSV = cv2.cvtColor(imgRGB, cv2.COLOR_RGB2HSV)
+
+        # Se segmenta el gris
+        lowerLimit = 0, 0, 150
+        upperLimit = 142, 255, 255
+
+        maskLine = cv2.inRange(imgHSV, np.uint8(lowerLimit), np.uint8(upperLimit))
+        maskOnlyRoad = cv2.bitwise_not(maskLine)
+
+        imgRGB[maskOnlyRoad > 0] = (0, 0, 0)
+
+        return imgPix2PixHD, imgRGB, maskLine
+
+    def introducirLinea(self, imgDestino, imgLineas, maskLineas):
+
+        maskLineas = cv2.bitwise_not(maskLineas)
+        entorno = cv2.bitwise_or(imgDestino, imgDestino, mask = maskLineas)
+        
+        montada = np.add(entorno, imgLineas)
+
+        return montada
+
+    def crearDirectoriosLog(self):
+        if not os.path.exists('LogImages'):
+            os.mkdir('./LogImages')
+            os.mkdir('./LogImages/input')
+            os.mkdir('./LogImages/output')
+
+    def guardarImagenes(self, imgReal, imgLineas, counter):
+        image_pil = Image.fromarray(imgReal)
+        image_pil.save(os.path.join('./LogImages/input', "img_" + str(counter) +  ".png"))
+
+        image_pil = Image.fromarray(imgLineas)
+        image_pil.save(os.path.join('./LogImages/output', "img_" + str(counter) +  ".png"))
+
     def on_telemetryGAN(self, data):
 
         #fileEnvio = open("C:/Users/david/Documents/Projects/drivingSimulator/src/PIPE_ENVIO.txt", "r")
@@ -155,6 +222,13 @@ class DonkeySimMsgHandler(IMesgHandler):
         dirEnvio = os.path.join(os.getcwd(), "ENVIO")
         dirEntrega = os.path.join(os.getcwd(), "ENTREGA")
         contadorEnviadas = 0
+        contadorImagenes = 0
+
+        #self.crearDirectoriosLog()
+
+        config = tf.ConfigProto()
+        config.gpu_options.per_process_gpu_memory_fraction = 0.3
+        set_session(tf.Session(config=config))
 
         while(True):
             
@@ -174,6 +248,9 @@ class DonkeySimMsgHandler(IMesgHandler):
                 # Se lee la imagen 
                 imagenEntrada = cv2.imread(os.path.join(dirEnvio, imgName))
 
+                # PROCESAMIENTO POR SI ENTRAN SOLO LAS LINEAS DE LA CARRETERA
+                seg_Pix2PixHD, imgLineas, maskLineas = self.recogerLineas(imagenEntrada)
+
                 # PROCESAMIENTO DE IMAGEN
                 # Si la carretera es "realista" tenemos que segmentarla.
                 #imagenSeg, maskRoad = self.changeRoad(imagenEntrada)
@@ -182,9 +259,13 @@ class DonkeySimMsgHandler(IMesgHandler):
 
                 # La generación de las labels puede hacerse con OpenCV o con la red convolucional
                 # label = self.infere_label(image_array, tamImagenes)
-                label = self.toLabel(imagenEntrada)
-                print("Hola")
+                label = self.toLabel(seg_Pix2PixHD)
                 generada = infere_Pix2PixHD(self.modelDict['ganModel'], label, tamImagenes)
+
+                generada = self.introducirLinea(generada, imgLineas, maskLineas)
+
+                #self.guardarImagenes(generada, imgLineas, contadorImagenes)
+                contadorImagenes += 1
 
                 '''
                 # Codigo para montar la imagen procesada con la carretera de Unity
@@ -194,27 +275,50 @@ class DonkeySimMsgHandler(IMesgHandler):
                 generada = np.add(realRoad, entorno)
                 '''
 
-
                 # Se elimina la imagen recien procesada y se escribe el resultado del procesamiento.
                 os.remove(os.path.join(dirEnvio, imgName))
 
                 image_pil = Image.fromarray(generada)
                 image_pil.save(os.path.join(dirEntrega, "ENTREGA_" + str(contadorEnviadas) +  ".jpg"))
-
+            
                 # Se cambia el contador para saber qué imagen cong
                 if contadorEnviadas == 0:
                     contadorEnviadas = 1
                 else:
                     contadorEnviadas = 0
 
-                print("Generando")
+                self.parseControl(self.infereControl(generada))
 
+                torch.cuda.empty_cache()
                 end = time.time()
                 print(end - start)
                 
                 if enviado == False:
                     self.send_GAN_message()
                     enviado = True
+
+    def infereControl(self, imagen):
+        print(imagen.shape)
+        imagen = imagen / 255.0
+        imagen = np.reshape(imagen, (1, 256, 512, 3))
+        print(imagen)
+        steering = self.modelDict['steeringModel'].predict(imagen)
+        return steering[0][0] * 25
+
+    def parseControl(self, steering_angle):
+        self.steering_angle = steering_angle
+        self.throttle = 0.2
+
+        self.enviarControlGAN(self.steering_angle, self.throttle)
+
+    def enviarControlGAN (self, steer, throttle):
+        # Se envía aquí directamente el mansaje en vez de utilizar
+        # las funciones del socket porque así se puede hacer el while(true)
+        msg = { 'msg_type' : 'control', 'steering': steer.__str__(), 'throttle':throttle.__str__(), 'brake': '0.0' }
+        json_msg = json.dumps(msg)
+        data = json_msg.encode()
+        sent = self.sock.send(data[:self.sock.chunk_size])
+        print("Enviando control")
             
     def toLabel(self, imgRGB):
         imagen = imgRGB.copy()
@@ -407,10 +511,9 @@ def go(modelosName, address, constant_throttle=0, num_cars=1, image_cb=None, ran
     ganModel = None
     labelerModel = None
 
-    # Carga de los modelos necesarios para hacer inferencia
-    if modelosName['steeringModel'] != None:
-        steeringModel = load_model(modelosName['steeringModel'])
-        steeringModel.compile("sgd", "mse")
+    config = tf.ConfigProto()
+    config.gpu_options.per_process_gpu_memory_fraction = 0.3
+    set_session(tf.Session(config=config))
 
     if modelosName['GAN'] != None:
         os.chdir('./pix2pixHD')
@@ -422,8 +525,18 @@ def go(modelosName, address, constant_throttle=0, num_cars=1, image_cb=None, ran
         labelerModel = load_model('./labeler/' + modelosName['labeler'] + '.h5')
         #labelerModel.compile("sgd", "mse")
 
+    # Carga de los modelos necesarios para hacer inferencia
+    if modelosName['steeringModel'] != None:
+        #steeringModel = load_model(modelosName['steeringModel'])
+        #steeringModel.compile("sgd", "mse")
+
+        steeringModel = tf.keras.models.load_model(
+            modelosName['steeringModel'],
+            custom_objects=None,
+            compile=False
+        )
+
     modelDict = {'steeringModel': steeringModel, 'ganModel': ganModel, 'labelerModel': labelerModel}
-    #print(modelDict)
   
     #setup the server
     # Se crea el handler. El handler contiene todos los Callback dependiendo del mensaje que reciba.

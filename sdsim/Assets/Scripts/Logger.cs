@@ -102,6 +102,8 @@ public class Logger : MonoBehaviour {
 	string outputFilename = "log_car_controls.txt";
 	private StreamWriter writer;
 
+	public int imageCounter = 0;
+
 	class ImageSaveJob {
 		public string filename;
 		public byte[] bytes;
@@ -138,13 +140,19 @@ public class Logger : MonoBehaviour {
 
 			// Se inicializa un writer que se encarga de escribir en el fichero
 			// las etiquetas de las imagenes
-			writer = new StreamWriter(filename);
+			if (File.Exists(filename))
+			{
+				writer = File.AppendText(filename);
+			} else
+			{
+				writer = new StreamWriter(filename);
+			}
 
 			Debug.Log("Opening file for log at: " + filename);
 
 			if(UdacityStyle)
 			{
-				writer.WriteLine("center,left,right,steering,throttle,brake,speed");
+				writer.WriteLine("image, steering");
 				// Generado por mi para poder guardar las imagenes en una carpeta.
 				Directory.CreateDirectory(GetLogPath() + "IMG");
 
@@ -202,14 +210,24 @@ public class Logger : MonoBehaviour {
 		{
 			if(UdacityStyle)
 			{
-				// Se le pide el nombre del fichero a la funcion
-				string image_filename = GetUdacityStyleImageFilename();
-				// Se calcula el porcentaje de steering que está haciendo el coche
-				// teniendo en cuenta el maximo y el real.
-				float steering = car.GetSteering() / car.GetMaxSteering();
-				writer.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7}", image_filename, 
-                    "none", "none", steering.ToString(), 
-                    car.GetThrottle().ToString(), "0", "0", lapCounter));
+				if (frameCounter % 4 == 0)
+				{
+					// Se le pide el nombre del fichero a la funcion
+					string image_route = GetUdacityStyleImageFilename();
+
+
+					string image_filename = string.Format("road_{0,8:D8}.png", imageCounter);
+					// Se calcula el porcentaje de steering que está haciendo el coche
+					// teniendo en cuenta el maximo y el real.
+					/*float steering = car.GetSteering() / car.GetMaxSteering();
+					writer.WriteLine(string.Format("{0},{1},{2},{3},{4},{5},{6},{7}", image_filename, 
+						"none", "none", steering.ToString(), 
+						car.GetThrottle().ToString(), "0", "0", lapCounter));*/
+
+					string steering = (car.GetSteering() / car.GetMaxSteering()).ToString().Replace(',', '.');
+					writer.WriteLine(string.Format("{0},{1}", image_filename, steering));
+				}
+
 			}
             else if(DonkeyStyle || SharkStyle)
             {
@@ -262,9 +280,12 @@ public class Logger : MonoBehaviour {
         }
         else
         {
-			// Llama a una función que introduce una imagen en 
-			// el array que introduce las imagenes
-			SaveCamSensor(camSensor, camSensor2, activity, "");
+			if(frameCounter % 4 == 0) {
+				// Llama a una función que introduce una imagen en 
+				// el array que introduce las imagenes
+				SaveCamSensor(camSensor, camSensor2, activity, "");
+				imageCounter = imageCounter + 1;
+			} 
         }
 
         if (maxFramesToLog != -1 && frameCounter >= maxFramesToLog)
@@ -285,9 +306,9 @@ public class Logger : MonoBehaviour {
 		{
 			// El nombre aquí es problemático ya que contiene la carpeta IMG. 
 			// Para que funcione se debe crear esta carpeta.
-			return GetLogPath() + string.Format("IMG/road_{0,8:D8}.png", frameCounter);
+			return GetLogPath() + string.Format("IMG/road_{0,8:D8}.png", imageCounter);
 		} else {
-			return GetLogPath() + string.Format("IMG2/road_{0,8:D8}.png", frameCounter);
+			return GetLogPath() + string.Format("IMG2/road_{0,8:D8}.png", imageCounter);
 		}
 	}
 

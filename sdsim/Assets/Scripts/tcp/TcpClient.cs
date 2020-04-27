@@ -67,12 +67,9 @@ public class TcpClient : MonoBehaviour {
 	{
 		//Check how much bytes are recieved and call EndRecieve to finalize handshake
 		int recieved = _clientSocket.EndReceive(AR);
-		Debug.Log(recieved);
 
 		if(recieved <= 0)
 			return;
-
-		Debug.Log("CALLBACKRECIBIDO");
 
 		//Copy the recieved data into new buffer , to avoid null bytes
 		byte[] recData = new byte[recieved];

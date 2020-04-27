@@ -96,6 +96,7 @@ public class Car : MonoBehaviour, ICar {
 		// Clamp deja siempre el valor del primer parámetro entre el minimo
 		// y el máximo incluso cuando se sobre pasa.
 		requestSteering = Mathf.Clamp(val, -maxSteer, maxSteer);
+		Debug.Log("RequestSteering: " + requestSteering);
 		//Debug.Log("request steering: " + val);
 	}
 
@@ -217,6 +218,7 @@ public class Car : MonoBehaviour, ICar {
 		wheelColliders[3].steerAngle = steerAngle;
 
 		//four wheel drive at the moment
+
 		foreach(WheelCollider wc in wheelColliders)
 		{
 			if(rb.velocity.magnitude < maxSpeed)

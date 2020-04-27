@@ -127,6 +127,7 @@ namespace tk
             client.dispatcher.Register("quit_app", new tk.Delegates.OnMsgRecv(OnQuitApp));
             client.dispatcher.Register("regen_road", new tk.Delegates.OnMsgRecv(OnRegenRoad));
 			client.dispatcher.Register("GANResult", new tk.Delegates.OnMsgRecv(OnGANResult));
+			client.dispatcher.Register("GANControl", new tk.Delegates.OnMsgRecv(OnGANControl));
 		}
 
         bool Connect()
@@ -195,14 +196,34 @@ namespace tk
 		void OnGANResult(JSONObject json)
 		{
 			Debug.Log("ONGANRESULT");
-			if (imagenObj.activeSelf == false)
+			/*if (imagenObj.activeSelf == false)
 			{
 				imagenObj.SetActive(true);
 				Debug.Log("Activando imagenes");
-			}
+			}*/
 
 			//Comenzamos a recoger imagenes
 			recogiendo = true;
+		}
+
+		void OnGANControl(JSONObject json)
+		{
+			try
+			{
+				ai_steering = float.Parse(json["steering"].str, CultureInfo.InvariantCulture.NumberFormat) * car.GetMaxSteering();
+				ai_throttle = float.Parse(json["throttle"].str, CultureInfo.InvariantCulture.NumberFormat);
+				ai_brake = float.Parse(json["brake"].str, CultureInfo.InvariantCulture.NumberFormat);
+
+				//Debug.Log("STEERING: " + ai_steering);
+
+				car.RequestSteering(ai_steering);
+				car.RequestThrottle(25);
+				//car.RequestFootBrake(ai_brake);
+			}
+			catch (Exception e)
+			{
+				Debug.Log(e.ToString());
+			}
 		}
 
 		void SendCarLoaded()
@@ -361,8 +382,8 @@ namespace tk
 				Sprite newSprite = Sprite.Create(newImg, new Rect(0, 0, newImg.width, newImg.height), new Vector2(0.5f, 0.5f));
 				imagenObj.GetComponent<Image>().sprite = newSprite;
 
-				if (!imagenObj.activeSelf)
-					imagenObj.SetActive(true);
+				/*if (!imagenObj.activeSelf)
+					imagenObj.SetActive(true);*/
 
 				if(contadorRecogidas == 0)
 				{
@@ -438,6 +459,7 @@ namespace tk
 								try
 								{
 									File.WriteAllBytes(Path.Combine(dirEnvio, "ENVIO_" + contadorEnviadas + ".png"), image64);
+
 								}
 								catch
 								{

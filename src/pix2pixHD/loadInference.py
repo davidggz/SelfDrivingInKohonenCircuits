@@ -2,7 +2,6 @@ import os
 from collections import OrderedDict
 from torch.autograd import Variable
 from options.test_options import TestOptions
-from data.data_loader import CreateDataLoader
 from models.models import create_model
 import util.util as util
 from util.visualizer import Visualizer
@@ -94,5 +93,8 @@ def infere_Pix2PixHD(model, label, tamImagen):
     label = np.reshape(label, (1, 3, tamImagen[0], tamImagen[1]))
 
     generated = model.inference(label, None, None)
+
+    del label
+    del transform
 
     return util.tensor2im(generated.data[0])
