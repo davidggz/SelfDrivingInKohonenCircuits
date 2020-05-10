@@ -59,6 +59,8 @@ namespace tk
 		int contadorEnviadas = 0;
 		int contadorRecogidas = 0;
 		byte[] fileData;
+		Texture2D newImg;
+		Sprite newSprite;
 
 
 
@@ -76,8 +78,9 @@ namespace tk
             car = carObj.GetComponent<ICar>();
             client = GetComponent<tk.JsonTcpClient>();
 		    pm = GameObject.FindObjectOfType<PathManager>();
+			newImg = new Texture2D(1, 1);
 
-            Canvas canvas = GameObject.FindObjectOfType<Canvas>();
+			Canvas canvas = GameObject.FindObjectOfType<Canvas>();
             GameObject go = CarSpawner.getChildGameObject(canvas.gameObject, "AISteering");
             if (go != null)
                 ai_text = go.GetComponent<Text>();
@@ -196,11 +199,11 @@ namespace tk
 		void OnGANResult(JSONObject json)
 		{
 			Debug.Log("ONGANRESULT");
-			/*if (imagenObj.activeSelf == false)
+			if (imagenObj.activeSelf == false)
 			{
 				imagenObj.SetActive(true);
 				Debug.Log("Activando imagenes");
-			}*/
+			}
 
 			//Comenzamos a recoger imagenes
 			recogiendo = true;
@@ -367,23 +370,24 @@ namespace tk
 		void recogerImagenes()
 		{
 			DirectoryInfo dir = new DirectoryInfo(dirEntrega);
+			Debug.Log("Hola");
 			if (dir.GetFiles().Length > 1)
 			{
+				Debug.Log("Recogiendo imagen");
 				//string firstFileName = dir.GetFiles().Select(fi => fi.Name).FirstOrDefault();
 				string firstFileName = "ENTREGA_" + contadorRecogidas + ".jpg";
 
-				Texture2D newImg = new Texture2D(1, 1);
 				fileData = File.ReadAllBytes(Path.Combine(dirEntrega, firstFileName));
 				File.Delete(Path.Combine(dirEntrega, firstFileName));
 
 				newImg.LoadImage(fileData);
 				newImg.Apply();
 
-				Sprite newSprite = Sprite.Create(newImg, new Rect(0, 0, newImg.width, newImg.height), new Vector2(0.5f, 0.5f));
+				newSprite = Sprite.Create(newImg, new Rect(0, 0, newImg.width, newImg.height), new Vector2(0.5f, 0.5f));
 				imagenObj.GetComponent<Image>().sprite = newSprite;
 
-				/*if (!imagenObj.activeSelf)
-					imagenObj.SetActive(true);*/
+				if (!imagenObj.activeSelf)
+					imagenObj.SetActive(true);
 
 				if(contadorRecogidas == 0)
 				{
@@ -397,7 +401,7 @@ namespace tk
 		// Update is called once per frame
 		void Update () 
         {
-			Debug.Log(Directory.GetCurrentDirectory());
+			//Debug.Log(Directory.GetCurrentDirectory());
 
 			// Si no está conectado, se conecta.
             if(state == State.UnConnected)
@@ -447,6 +451,8 @@ namespace tk
 
 						if (recogiendo == true)
 						{
+							Debug.Log("RECOGIENDO");
+							//Debug.Log("HOLAAAAAAAAAAAAAAAAA");
 							recogiendo = false;
 							InvokeRepeating("recogerImagenes", 0, 0.09f);
 						}
@@ -455,7 +461,7 @@ namespace tk
 						{
 							DirectoryInfo dir = new DirectoryInfo(dirEnvio);
 							if (dir.GetFiles().Length < 2) {
-								Debug.Log(Path.Combine(dirEnvio, "ENVIO_" + contadorEnviadas + ".png"));
+								//Debug.Log(Path.Combine(dirEnvio, "ENVIO_" + contadorEnviadas + ".png"));
 								try
 								{
 									File.WriteAllBytes(Path.Combine(dirEnvio, "ENVIO_" + contadorEnviadas + ".png"), image64);

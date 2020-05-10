@@ -12,7 +12,6 @@ import numpy as np
 import time
 
 from keras.models import load_model
-from multi_gpu import to_multi_gpu
 from skimage.io import imread
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,6 +19,7 @@ import cv2 as cv
 
 import torchvision.transforms as transforms
 from PIL import Image
+import gc
 
 opt = TestOptions().parse(save=False)
 opt.nThreads = 1   # test code only supports nThreads = 1
@@ -78,6 +78,7 @@ def __make_power_2(img, base, method=Image.BICUBIC):
     if (h == oh) and (w == ow):
         return img
     return img.resize((w, h), method)
+    
 
 def infere_Pix2PixHD(model, label, tamImagen):
     transform = []
@@ -92,9 +93,13 @@ def infere_Pix2PixHD(model, label, tamImagen):
 
     label = np.reshape(label, (1, 3, tamImagen[0], tamImagen[1]))
 
-    generated = model.inference(label, None, None)
+    generated = model.inference(label, torch.from_numpy(np.array([0])), torch.from_numpy(np.array([0])))
 
+
+    '''
     del label
     del transform
+    torch.cuda.empty_cache()
+    '''
 
     return util.tensor2im(generated.data[0])

@@ -79,6 +79,9 @@ public class MenuHandler : MonoBehaviour {
 		if (carJSControl != null)
 			carJSControl.SetActive(false);
 
+		loggerClass.setPhotoMode(1);
+		loggerClass.setUseThirdPhoto(true);
+		Logger.SetActive(true);
 		GANInfere.SetActive(true);
 		menuPanel.SetActive(false);
 		stopPanel.SetActive(true);

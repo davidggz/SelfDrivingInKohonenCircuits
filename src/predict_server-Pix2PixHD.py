@@ -15,6 +15,7 @@ import socket
 from io import BytesIO
 import base64
 import datetime
+import time
 
 import numpy as np
 from tensorflow.keras.models import load_model
@@ -37,11 +38,14 @@ from pix2pixHD.loadInference import infere_Pix2PixHD
 
 from skimage.io import imread
 import re
-import tensorflow as tf
 
-from keras.backend.tensorflow_backend import set_session
 import gc
 import torch
+
+import tensorflow as tf
+from keras.backend.tensorflow_backend import set_session
+from keras.backend.tensorflow_backend import clear_session
+
 
 class DonkeySimMsgHandler(IMesgHandler):
 
@@ -223,17 +227,24 @@ class DonkeySimMsgHandler(IMesgHandler):
         dirEntrega = os.path.join(os.getcwd(), "ENTREGA")
         contadorEnviadas = 0
         contadorImagenes = 0
+        tamImagenes = (256, 512, 3)
+
+
+        prueba = True
 
         #self.crearDirectoriosLog()
-
-        config = tf.ConfigProto()
-        config.gpu_options.per_process_gpu_memory_fraction = 0.3
-        set_session(tf.Session(config=config))
-
         while(True):
             
             imgNames = os.listdir(dirEnvio)
+            outNames = os.listdir(dirEntrega)
+            #and len(outNames) < 2
             if len(imgNames) > 1:
+                '''
+                if enviado == False:
+                    imagen = cv2.imread("prueba.png")
+                    self.infereControl(imagen)
+                '''
+
                 start = time.time()
                 imgName = "ENVIO_" + str(contadorEnviadas) + ".png"
                 '''
@@ -242,8 +253,6 @@ class DonkeySimMsgHandler(IMesgHandler):
                 os.remove(os.path.join(dirEnvio, imgNames[0]))
                 image_array = np.array(image)
                 '''
-
-                tamImagenes = (256, 512, 3)
 
                 # Se lee la imagen 
                 imagenEntrada = cv2.imread(os.path.join(dirEnvio, imgName))
@@ -260,7 +269,8 @@ class DonkeySimMsgHandler(IMesgHandler):
                 # La generación de las labels puede hacerse con OpenCV o con la red convolucional
                 # label = self.infere_label(image_array, tamImagenes)
                 label = self.toLabel(seg_Pix2PixHD)
-                generada = infere_Pix2PixHD(self.modelDict['ganModel'], label, tamImagenes)
+                with torch.no_grad():
+                    generada = infere_Pix2PixHD(self.modelDict['ganModel'], label, tamImagenes)
 
                 generada = self.introducirLinea(generada, imgLineas, maskLineas)
 
@@ -287,23 +297,35 @@ class DonkeySimMsgHandler(IMesgHandler):
                 else:
                     contadorEnviadas = 0
 
-                self.parseControl(self.infereControl(generada))
+                #generada = cv2.imread(os.path.join(os.getcwd(), "prueba.png"))
 
+                steering = self.infereControl(generada)
+                self.parseControl(steering)
+                
+                '''
+                del generada
+                del label
+                gc.collect()
                 torch.cuda.empty_cache()
+                '''
+
                 end = time.time()
-                print(end - start)
+                print("TIEMPO: " +  str(end - start))
                 
                 if enviado == False:
+                    time.sleep(0.5)
                     self.send_GAN_message()
                     enviado = True
 
     def infereControl(self, imagen):
-        print(imagen.shape)
+
         imagen = imagen / 255.0
         imagen = np.reshape(imagen, (1, 256, 512, 3))
-        print(imagen)
+
         steering = self.modelDict['steeringModel'].predict(imagen)
-        return steering[0][0] * 25
+        
+        print("STEERING: " + str(steering[0][0] * 25))
+        return steering[0][0]
 
     def parseControl(self, steering_angle):
         self.steering_angle = steering_angle
@@ -312,13 +334,12 @@ class DonkeySimMsgHandler(IMesgHandler):
         self.enviarControlGAN(self.steering_angle, self.throttle)
 
     def enviarControlGAN (self, steer, throttle):
-        # Se envía aquí directamente el mansaje en vez de utilizar
+        # Se envía aquí directamente el mensaje en vez de utilizar
         # las funciones del socket porque así se puede hacer el while(true)
         msg = { 'msg_type' : 'control', 'steering': steer.__str__(), 'throttle':throttle.__str__(), 'brake': '0.0' }
         json_msg = json.dumps(msg)
         data = json_msg.encode()
         sent = self.sock.send(data[:self.sock.chunk_size])
-        print("Enviando control")
             
     def toLabel(self, imgRGB):
         imagen = imgRGB.copy()
@@ -387,7 +408,7 @@ class DonkeySimMsgHandler(IMesgHandler):
         json_msg = json.dumps(msg)
         data = json_msg.encode()
         sent = self.sock.send(data[:self.sock.chunk_size])
-        print("Enviando")
+
 
         #self.sock.queue_message(msg)
 
@@ -510,10 +531,41 @@ def go(modelosName, address, constant_throttle=0, num_cars=1, image_cb=None, ran
     steeringModel = None
     ganModel = None
     labelerModel = None
-
+    '''
     config = tf.ConfigProto()
-    config.gpu_options.per_process_gpu_memory_fraction = 0.3
+    #config.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
+    #config.log_device_placement = True  # to log device placement (on which device the operation ran)
+    config.gpu_options.per_process_gpu_memory_fraction = 0.8
+    sess = tf.Session(config=config)
+    set_session(sess)  # set this TensorFlow session as the default session for Keras
+    '''
+
+    '''
+    config = tf.ConfigProto()
+    config.gpu_options.per_process_gpu_memory_fraction = 0.9
+    #config.gpu_options.allow_growth = True
     set_session(tf.Session(config=config))
+    '''
+
+    #config.gpu_options.per_process_gpu_memory_fraction = 0.005
+    #config.gpu_options.allow_growth = True
+    session_config=tf.ConfigProto( gpu_options=tf.GPUOptions(per_process_gpu_memory_fraction=0.2))
+    set_session(tf.Session(config=session_config))
+
+    input("Despues de session")
+
+    # Carga de los modelos necesarios para hacer inferencia
+    if modelosName['steeringModel'] != None:
+        steeringModel = load_model(modelosName['steeringModel'])
+        #steeringModel.compile("sgd", "mse")
+
+        '''
+        steeringModel = tf.keras.models.load_model(
+            modelosName['steeringModel'],
+            custom_objects=None,
+            compile=False
+        )
+        '''
 
     if modelosName['GAN'] != None:
         os.chdir('./pix2pixHD')
@@ -524,17 +576,6 @@ def go(modelosName, address, constant_throttle=0, num_cars=1, image_cb=None, ran
     if modelosName['labeler'] != None:
         labelerModel = load_model('./labeler/' + modelosName['labeler'] + '.h5')
         #labelerModel.compile("sgd", "mse")
-
-    # Carga de los modelos necesarios para hacer inferencia
-    if modelosName['steeringModel'] != None:
-        #steeringModel = load_model(modelosName['steeringModel'])
-        #steeringModel.compile("sgd", "mse")
-
-        steeringModel = tf.keras.models.load_model(
-            modelosName['steeringModel'],
-            custom_objects=None,
-            compile=False
-        )
 
     modelDict = {'steeringModel': steeringModel, 'ganModel': ganModel, 'labelerModel': labelerModel}
   

@@ -60,6 +60,7 @@ public class Logger : MonoBehaviour {
 	public GameObject carObj;
 	public ICar car;
 	public CameraSensor camSensor;
+	public CameraSensor thirdCamera;
 	// Camara del segundo coche
 	public CameraSensor camSensor2;
 	public CameraSensor optionlB_CamSensor;
@@ -68,6 +69,8 @@ public class Logger : MonoBehaviour {
 	// Coger dos imagenes o solo una. Modo imagen normal/imagen modificada
 	// Valores validos: 1 2
 	public int nPhotos = 2;
+
+	public bool useThirdCamera = true;
 
 	//what's the current frame index
     public int frameCounter = 0;
@@ -340,8 +343,10 @@ public class Logger : MonoBehaviour {
         {
             Texture2D image = cs.GetImage();
 			Texture2D image2 = cs2.GetImage();
+			Texture2D image3 = thirdCamera.GetImage();
 			ImageSaveJob ij = new ImageSaveJob();
 			ImageSaveJob ij2 = new ImageSaveJob();
+			ImageSaveJob ij3 = new ImageSaveJob();
 
 			// Tengo que haces la dos imagenes aunque no haga falta en todos los
 			// casos porque si lo pongo en una condición me dan warnings.
@@ -349,22 +354,29 @@ public class Logger : MonoBehaviour {
 			// Se comprueba que tipo de estilo se quiere para la imagen
 			if (UdacityStyle)
 			{
-				// Se guarda el nombre que va a tener la imagen llamando a una función.
-				ij.filename = GetUdacityStyleImageFilename();
-
-				// Se codifica la imagen como JPG
-				//ij.bytes = image.EncodeToJPG();
-				// Se codifica la imagen como PNG
-				ij.bytes = image.EncodeToPNG();
-
-				if (nPhotos == 2)
+				if (useThirdCamera == false)
 				{
-					ij2.filename = GetUdacityStyleImageFilename(2);
+					// Se guarda el nombre que va a tener la imagen llamando a una función.
+					ij.filename = GetUdacityStyleImageFilename();
 
 					// Se codifica la imagen como JPG
-					//ij2.bytes = image2.EncodeToJPG();
+					//ij.bytes = image.EncodeToJPG();
 					// Se codifica la imagen como PNG
-					ij2.bytes = image2.EncodeToPNG();
+					ij.bytes = image.EncodeToPNG();
+
+					if (nPhotos == 2)
+					{
+						ij2.filename = GetUdacityStyleImageFilename(2);
+
+						// Se codifica la imagen como JPG
+						//ij2.bytes = image2.EncodeToJPG();
+						// Se codifica la imagen como PNG
+						ij2.bytes = image2.EncodeToPNG();
+					}
+				} else
+				{
+					ij3.filename = GetUdacityStyleImageFilename();
+					ij3.bytes = image3.EncodeToJPG();
 				}
 			}
             else if (DonkeyStyle)
@@ -396,10 +408,15 @@ public class Logger : MonoBehaviour {
             {
 				// Se guarda la nueva imagen en imagesToSave
 				// se hace en un lock para proteger la variable.
-                imagesToSave.Add(ij);
-				if (nPhotos == 2)
+				if (useThirdCamera == false)
 				{
-					imagesToSave.Add(ij2);
+					imagesToSave.Add(ij);
+					if (nPhotos == 2)
+					{
+						imagesToSave.Add(ij2);
+					}
+				} else {
+					imagesToSave.Add(ij3);
 				}
             }
         }
@@ -408,6 +425,11 @@ public class Logger : MonoBehaviour {
 	public void setPhotoMode(int mode)
 	{
 		nPhotos = mode;
+	}
+
+	public void setUseThirdPhoto(bool mode)
+	{
+		useThirdCamera = mode;
 	}
 
 	public void SaverThread()
