@@ -5098,8 +5098,8 @@ MonoBehaviour:
   turnInc: 1
   sameRandomPath: 0
   randSeed: 10
-  doMakeRandomPath: 0
-  doDavidPath: 1
+  doMakeRandomPath: 1
+  doDavidPath: 0
   doLoadScriptPath: 0
   doLoadPointPath: 0
   doBuildRoad: 1

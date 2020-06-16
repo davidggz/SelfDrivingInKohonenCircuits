@@ -20,6 +20,10 @@ python predict_server.py --steeringModel steering/0049-ConduccionAutonoma-0042+D
 
 python predict_server.py --steeringModel steering/0050-ConduccionAutonoma-0042+DDD-0005.h5 --GAN Mod1-OnlyCityscapes-512 --labeler 0025-segmentedToLabelNet-CCCC-0001
 
-#GAUGAN
+# GAUGAN
 
 python predict_server-GAUGAN.py --steeringModel steering/0050-ConduccionAutonoma-0042+DDD-0005.h5 --GAN Cityscapes-LabeledMio-Mod1 --labeler 0025-segmentedToLabelNet-CCCC-0001
+
+# GAUGAN-VAE
+
+python predict_server-GAUGAN-VAE.py --steeringModel steering/0050-ConduccionAutonoma-0042+DDD-0005.h5 --GAN Cityscapes-LabeledMio-VAE --labeler 0025-segmentedToLabelNet-CCCC-0001 --style_image styleimages/cityscapesPhoto.png
