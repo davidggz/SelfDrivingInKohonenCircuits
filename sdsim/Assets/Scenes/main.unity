@@ -5952,7 +5952,7 @@ MonoBehaviour:
   lastSteer: 0
   lastAccel: 0
   activity: keep_lane
-  maxSteer: 25
+  maxSteer: 50
   last_collision: none
 --- !u!54 &1764359899
 Rigidbody:

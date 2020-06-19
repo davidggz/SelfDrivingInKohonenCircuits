@@ -25,7 +25,7 @@ public class PathManager : MonoBehaviour {
 
 	public bool doMakeRandomPath = true;
 
-	public bool doDavidPath = false;
+	public bool doKohonenPath = false;
 
 	public bool doLoadScriptPath = false;
 
@@ -72,7 +72,7 @@ public class PathManager : MonoBehaviour {
 		{
 			MakePointPath();
 		}
-		else if (doDavidPath)
+		else if (doKohonenPath)
 		{
 			MakeDavidPath();
 		}
