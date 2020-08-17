@@ -1,15 +1,3 @@
-# PIX2PIXHD
-python predict_server.py --steeringModel highway.h5 --GAN Mod1-OnlyCityscapes-512 --labeler 0025-segmentedToLabelNet-CCCC-0001
-
-python predict_server.py --steeringModel highway.h5 --GAN PaisajeSeco-Mod1 --labeler 0025-segmentedToLabelNet-CCCC-0001
-
-python predict_server.py --steeringModel highway.h5 --GAN PaisajeSeco-Mod2 --labeler 0025-segmentedToLabelNet-CCCC-0001
-
-python predict_server.py --steeringModel highway.h5 --GAN Cityscapes-LabeledMio-Mod1 --labeler 0025-segmentedToLabelNet-CCCC-0001
-
-python predict_server.py --steeringModel highway.h5 --GAN roadsAmericanas+Cityscapes --labeler 0025-segmentedToLabelNet-CCCC-0001
-
-
 # STEERING
 
 python predict_server.py --steeringModel steering/0046-ConduccionAutonoma-0042+DDD-0001.h5 --GAN Mod1-OnlyCityscapes-512 --labeler 0025-segmentedToLabelNet-CCCC-0001
@@ -18,7 +6,7 @@ python predict_server.py --steeringModel steering/0048-ConduccionAutonoma-0042+D
 
 python predict_server.py --steeringModel steering/0049-ConduccionAutonoma-0042+DDD-0004.h5 --GAN Mod1-OnlyCityscapes-512 --labeler 0025-segmentedToLabelNet-CCCC-0001
 
-python predict_server.py --steeringModel steering/0050-ConduccionAutonoma-0042+DDD-0005.h5 --GAN Mod1-OnlyCityscapes-512 --labeler 0025-segmentedToLabelNet-CCCC-0001
+python predict_server-Pix2PixHD.py --steeringModel steering/0050-ConduccionAutonoma-0042+DDD-0005.h5 --GAN Mod1-OnlyCityscapes-512 --labeler 0025-segmentedToLabelNet-CCCC-0001
 
 # GAUGAN
 

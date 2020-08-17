@@ -43,6 +43,7 @@ public class RoadBuilder : MonoBehaviour {
 
 	void Start()
 	{
+		Debug.Log(roadTextures.Length);
 		if(terToolkit != null && doErodeTerrain)
 		{
 			//terToolkit.FastThermalErosion(20, 0.0f, 0.0f); //creates pits
@@ -130,6 +131,7 @@ public class RoadBuilder : MonoBehaviour {
 		if(customRoadTexure != null)
 		{
 			mr.material.mainTexture = customRoadTexure;
+
 		}
 		else if(roadTextures != null && iRoadTexture < roadTextures.Length)
 		{
@@ -141,12 +143,14 @@ public class RoadBuilder : MonoBehaviour {
 				t = texturaSecundaria;
 			}
 
-			if(mr != null && t != null)
+
+			if (mr != null && t != null)
 			{
 				// Se le pone esta textura al meshrenderer
 				mr.material.mainTexture = t;
 			}
 		}
+
 
 
 

@@ -226,6 +226,7 @@ class DonkeySimMsgHandler(IMesgHandler):
         dirEnvio = os.path.join(os.getcwd(), "ENVIO")
         dirEntrega = os.path.join(os.getcwd(), "ENTREGA")
         contadorEnviadas = 0
+        contadorRecogidas = 0
         contadorImagenes = 0
         tamImagenes = (256, 512, 3)
 
@@ -289,8 +290,16 @@ class DonkeySimMsgHandler(IMesgHandler):
                 os.remove(os.path.join(dirEnvio, imgName))
 
                 image_pil = Image.fromarray(generada)
-                image_pil.save(os.path.join(dirEntrega, "ENTREGA_" + str(contadorEnviadas) +  ".jpg"))
+                if len(outNames) < 2:
+                    image_pil.save(os.path.join(dirEntrega, "ENTREGA_" + str(contadorRecogidas) +  ".jpg"))
+
+                    if contadorRecogidas == 0:
+                        contadorRecogidas = 1
+                    else:
+                        contadorRecogidas = 0
             
+
+
                 # Se cambia el contador para saber qué imagen cong
                 if contadorEnviadas == 0:
                     contadorEnviadas = 1
@@ -552,7 +561,6 @@ def go(modelosName, address, constant_throttle=0, num_cars=1, image_cb=None, ran
     session_config=tf.ConfigProto( gpu_options=tf.GPUOptions(per_process_gpu_memory_fraction=0.2))
     set_session(tf.Session(config=session_config))
 
-    input("Despues de session")
 
     # Carga de los modelos necesarios para hacer inferencia
     if modelosName['steeringModel'] != None:

@@ -62,6 +62,7 @@ namespace tk
 		Texture2D newImg;
 		Sprite newSprite;
 
+		int totalDecisiones = 0;
 
 
 		public enum State
@@ -198,7 +199,6 @@ namespace tk
 
 		void OnGANResult(JSONObject json)
 		{
-			Debug.Log("ONGANRESULT");
 			if (imagenObj.activeSelf == false)
 			{
 				imagenObj.SetActive(true);
@@ -244,7 +244,7 @@ namespace tk
                 ai_throttle = float.Parse(json["throttle"].str, CultureInfo.InvariantCulture.NumberFormat);
                 ai_brake = float.Parse(json["brake"].str, CultureInfo.InvariantCulture.NumberFormat);
 
-                car.RequestSteering(ai_steering);
+				car.RequestSteering(ai_steering);
                 car.RequestThrottle(ai_throttle);
                 car.RequestFootBrake(ai_brake);
             }
@@ -370,10 +370,8 @@ namespace tk
 		void recogerImagenes()
 		{
 			DirectoryInfo dir = new DirectoryInfo(dirEntrega);
-			Debug.Log("Hola");
 			if (dir.GetFiles().Length > 1)
 			{
-				Debug.Log("Recogiendo imagen");
 				//string firstFileName = dir.GetFiles().Select(fi => fi.Name).FirstOrDefault();
 				string firstFileName = "ENTREGA_" + contadorRecogidas + ".jpg";
 
@@ -451,7 +449,6 @@ namespace tk
 
 						if (recogiendo == true)
 						{
-							Debug.Log("RECOGIENDO");
 							//Debug.Log("HOLAAAAAAAAAAAAAAAAA");
 							recogiendo = false;
 							InvokeRepeating("recogerImagenes", 0, 0.09f);
