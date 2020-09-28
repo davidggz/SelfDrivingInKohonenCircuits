@@ -73,7 +73,7 @@ Para poder ejecutar esta parte, se recomienda tener instalado **CUDA** y **CUDNN
 * **dill**
 * **scikit-image**
 
-Una vez instaladas estas librerías y cumplidas todos los requisitos, el sistema debería funcionar todo correctamente. 
+Una vez instaladas estas librerías y cumplidos todos los requisitos, el sistema debería funcionar correctamente. 
 
 # Tutorial de uso <img src="Imagenes/tutorial.png" width=45px>
 
