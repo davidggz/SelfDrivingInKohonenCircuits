@@ -51,64 +51,41 @@ A las imágenes generadas por las GAN se les introduce de manera artificial las 
 
 <img src="Imagenes/Autoencoder.gif" alt="Autoencoder" width="900"/>
 
-Una vez el modelo ha sido entrenado al completo, la red convolucional es capaz de segmentar las líneas de la carretera de manera correcta. Además, como las imágenes que solo tienen las líneas se han generado a partir del cuello de botella, en este se encuentran todas las características clave de las líneas de la carretera. Por este motivo, no solo se ha creado un segmentador de líneas de carretera, sino también un condensador de la información. En el siguiente gif se puede ver un ejemplo de esta segmentación:
+Una vez el modelo ha sido entrenado al completo, la red convolucional es capaz de **segmentar las líneas de la carretera de manera correcta**. Además, como las imágenes que solo tienen las líneas se han generado a partir del cuello de botella, en este se encuentran todas las características clave de las líneas de la carretera. Por este motivo, no solo se ha creado un segmentador de líneas, sino también un **condensador de información**. En el siguiente gif se puede ver un ejemplo de esta segmentación:
 
 <img src="Imagenes/segmentacion.gif" alt="Segmentación de líneas." width="500"/>
 
-## Modelos de síntesis de carreteras realistas <img src="Imagenes/nn.png" width=45px>
+## Instalación
+Para poder ejecutar esta parte, se recomienda tener instalado **CUDA** y **CUDNN** para que la inferencia en tiempo real sea rápida. La versión de Python que se necesita para poder ejecutar los modelos con la GPU ha de ser menor o igual a la versión 3.7. En concreto, se recomienda utilizar la **versión 3.7 de Python**. En cuanto a las librerías necesarias para ejecutar todo correctamente, se necesitan las siguientes:
 
-Los modelos que se muestran en la siguiente tabla han sido entrenados con distintos conjuntos de imágenes que se explican en la memoria del trabajo de fin de grado. Algunos de ellos son ampliamente conocidos, como *Cityscapes* o ADE20K, pero igualmente se van a puntualizar algunos datos.
+* **Numpy**
+* **tensorflow-gpu==1.13.1**
+* **Pillow**
+* **Matplotlib**
+* **OpenCV**
+* **keras==2.2.4**
+* **torch>=1.0.0.** Instalación en https://pytorch.org/.
+* **dominate**
+* **dill**
+* **scikit-image**
 
-- ***Cityscapes***: <a href="https://www.cityscapes-dataset.com/">Cityscapes</a> es un conjunto de imágenes que contiene tanto la propia imagen realista como su par segmentado. Todas las imágenes son de carreteras alemanas desde el frontal del coche.
-- **PaisajeSeco**: Este conjunto de imágenes ha sido obtenido a mano mediante la obtención de *frames* de distintas secciones del siguiente <a href="https://youtu.be/ZOZOqbK86t0">vídeo</a>.
-- **roadsAmericanas**: Este conjunto de imágenes ha sido generado mediante la obtención de un *frame* cada 30 frames del mismo <a href="https://youtu.be/ZOZOqbK86t0">vídeo</a> mencionado en el conjunto de PaisajeSeco.
-- **ADE20K**: Este conjunto de datos tiene muchísimas imágenes. Para acotarlo y solo utilizar imágenes relacionadas con paisajes, se utiliza un subconjunto utilizado por un trabajo llamado <a href="https://hucvl.github.io/attribute_hallucination/">Attribute Hallucination</a>.
-- ***Transient Attributes***: Este conjunto de datos es un conjunto de imágenes de distintas *webcam* repartidas en distintos lugares del mundo a lo largo de las estaciones. Gracias a esto, se puede obtener un mismo mapa segmentado pero con distintos estilos. El trabajo del que se ha obtenido este conjunto de imágenes se llama <a href="http://transattr.cs.brown.edu/files/TransientAttributes-paper.pdf">Transient Attributes</a>.
+Una vez instaladas estas librerías y cumplidas todos los requisitos, el sistema debería funcionar todo correctamente. 
 
-### Modelos unimodales
+## Tutorial de uso <img src="Imagenes/tutorial.png" width=45px>
 
-| Modelos creados en la experimentación | Descarga |
-| --- | --- |
-| **Arquitectura**: Pix2Pix <br> ***Data sets***: *Cityscapes* (3.475 imágenes) | <a href="https://mega.nz/file/CdVRVYoC#HxjnL8TPJhWlhAGoL1qOtfXTs9wU8fdZi9yB_YJVePk"> Download </a> |
-| **Arquitectura**: Pix2PixHD <br> ***Data sets***: *Cityscapes* (3.475 imágenes) | <a href="https://mega.nz/file/uEEFlKxa#aWWAnu70ll_FXRg_CsifXEVolP2cMlek1AylzFpV7VY"> Download </a> |
-| **Arquitectura**: Pix2PixHD <br> ***Data sets***: PaisajeSeco (1.728 imágenes) | <a href="https://mega.nz/file/GQdTkSqZ#j91njGjlfLxUs11Qb_VcLrYNTO0dNNAq0YLtfuZpvLw"> Download </a> |
-| **Arquitectura**: Pix2PixHD <br> ***Data sets***: *Cityscapes* (3.475) <br> &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PaisajeSeco (1.728 imágenes) | <a href="https://mega.nz/file/OREVnIQT#wlYCiex554__BI19NkA2gGuondX239kFwi7DM4sV8GA"> Download </a> |
-| **Arquitectura**: Pix2PixHD <br> ***Data sets***: roadsAmericanas (1.992 imágenes) | <a href="https://mega.nz/file/XQ1V2JxQ#2ue1hnlZtuskKLaYsv_2b_3a9ENNwNQwKFgiHiM-ldk"> Download </a> |
-| **Arquitectura**: Pix2PixHD <br> ***Data sets***: *Cityscapes* (3.475) <br> &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; roadsAmericanas (1.992 imágenes) | <a href="https://mega.nz/file/aBlR3DhA#Bo0NBBwLnZd9g_QcA64ZNxPEA3CwBDVuKfuqXeMUVkU"> Download </a> |
-| **Arquitectura**: GAUGAN sin VAE <br> ***Data sets***: *Cityscapes* (3.475 imágenes) | <a href="https://mega.nz/file/CIEEgYZD#y_8GM_QzXlDtspIcdWZw9yhEuk7F3f-iijrglGRcQjo"> Download </a> |
-| **Arquitectura**: GAUGAN sin VAE <br> ***Data sets***: *Cityscapes* (3.475) <br> &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; roadsAmericanas (1.992 imágenes) | <a href="https://mega.nz/file/GI8QXCZL#1gT9dBoPibLlrOTCcP_0s91Y5WJ9-FfU8GTfPoAXa70"> Download </a> |
-| **Arquitectura**: GAUGAN con VAE <br> ***Data sets***: *Cityscapes* (3.475) | <a href="https://mega.nz/file/DU9QHayQ#Y9aUGqYCz-2lQwxxJu5aWt1tL9YR3N8HW_MIOfRTkso"> Download </a> |
-| **Arquitectura**: GAUGAN con VAE <br> ***Data sets***: *Cityscapes* (3.475) <br> &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; roadsAmericanas (1.992 imágenes) | <a href="https://mega.nz/file/2Q8SQKzA#Hy6C5xqd3RJnIyUTdwlDfM5doT4qdrJ-r4LvlI0Hpf8"> Download </a> |
+Para poder ejecutar la conducción autónoma debemos seguir dos simples pasos.
 
-### Modelos multimodales
+1. **Encender el servidor.** Para ello, tenemos que posicionarnos en la carpeta **src** y ejecutar uno de los dos comandos siguientes:
+```
+python predict_server-GAUGAN-VAE.py --steeringModel steering/0050-ConduccionAutonoma-0042+DDD-0005.h5 --GAN Cityscapes-LabeledMio-VAE --style_image styleimages/cityscapesPhoto.png
+```
+```
+python predict_server-Pix2PixHD.py --steeringModel steering/0050-ConduccionAutonoma-0042+DDD-0005.h5 --GAN Mod1-OnlyCityscapes-512 
+```
 
-| Modelos creados en la experimentación | Descarga |
-| --- | --- |
-| **Arquitectura**: GAUGAN con VAE <br> ***Data sets***: *Cityscapes* (3.475) <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADE20K (8.363 imágenes) | <a href="https://mega.nz/file/jcESBKqC#qu0qcDS6QliSR7C5TfgLgb2QFM2QbBzh97UiY_FaOmY"> Download </a> |
-| **Arquitectura**: GAUGAN con VAE <br> ***Data sets***: *Cityscapes* (3.475) <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *Transient Attributes* (8.571 imágenes) | <a href="https://mega.nz/file/fIUGHArD#xi5CC5UO4IEutZ1R8tz7IQxGMrJiu5ypJjBu9vKwgQQ"> Download </a> |
-| **Arquitectura**: GAUGAN con VAE <br> ***Data sets***: *Cityscapes* (3.475) <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ADE20K (8.363 imágenes) <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *Transient Attributes* (8.571 imágenes) | <a href="https://mega.nz/file/GRdUGAbD#Qh8i7wSXwf4WYNbtETqkdydTvGtrfaUeKAFkCGdnVVk"> Download </a> |
+2. **Encender el simulador.** Una vez encendido el simulador, solo tenemos que clickar en **"Mundo realista"** para que comience la inferencia en las imágenes generadas por las GAN y, por lo tanto, la conducción autónoma.
 
-## Tutorial de uso de los modelos de síntesis de carreteras realistas <img src="Imagenes/tutorial.png" width=45px>
-
-Para poder ejecutar los modelos, se recomienda utilizar uno de los programas que se utilizó durante el desarrollo de la solución. Los únicos requisitos necesarios para ejecutar los modelos son los mismos que aparecen en el repositorio de la respectiva arquitectura, además de OpenCV. Es decir, si se intenta utilizar un modelo de Pix2PixHD, será necesario tener todos los requisitos de su repositorio. En concreto, los repositorios que se utilizaron fueron: <a href="https://github.com/NVIDIA/pix2pixHD">Pix2PixHD</a> y <a href="https://github.com/NVlabs/SPADE">GAUGAN</a>.
-
-Los ficheros para hacer la inferencia son los siguientes:
-
-<a href="https://mega.nz/file/uV0RAAZC#cHyc2v9W2vwBRk-5GR8I2WZCIRHFMAdiXFBQojcm8AE">Fichero de inferencia con Pix2PixHD</a>
-
-<a href="https://mega.nz/file/zY9TjCwa#6mcOjw6CY43DJtEifGq87QHHP8K8HrGGpv1FhCZiXfE">Fichero de inferencia con GAUGAN sin VAE</a>
-
-<a href="https://mega.nz/file/Lc0DlKqC#rMNP6tKF7ks8Gnq-UQAF0JM9gqqvkDMzYu88jJB5d88">Fichero de inferencia con GAUGAN con VAE</a>
-
-Para seleccionar qué modelo utilizar y en qué directorio inferir, se deben cambiar las opciones que aparecen al inicio de cada fichero entre los comentarios **"PROGRAM OPTIONS"**.
-## Resultados obtenidos por todos los modelos de síntesis de imágenes <img src="Imagenes/resultados.png" width=40px>
-### Resultados obtenidos por los modelos unimodales
-
-<img src="Imagenes/UnimodalUnido.png" alt="Resumen de resultados obtenidos con todos los modelos unimodales" width="900"/>
-
-### Resultados obtenidos por los modelos multimodales
-
-<img src="Imagenes/ResumenMultimodales.png" alt="Resumen de resultados obtenidos con todos los modelos multimodales" width="900"/>
+Cabe destacar que los modelos ya están incluidos en el propio repositorio, no es necesario descargárselos a posteriori.
 
 ## Autor <img src="Imagenes/autor.png" width=40px>
 David González González <a href="https://www.linkedin.com/in/david-gonzalez-gonzalez/">LinkedIn</a>
