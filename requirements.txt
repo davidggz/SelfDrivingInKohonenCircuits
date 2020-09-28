@@ -1,3 +1,13 @@
-tensorflow>=1.12
-pillow
+# python 3.7
+numpy
+tensorflow-gpu==1.13.1
+Pillow
 matplotlib
+opencv-python
+keras==2.2.4
+
+# Requerimientos de Pix2PixHD y GAUGAN específicos
+torch from https://pytorch.org/ >= 1.0.0
+dominate
+dill
+scikit-image

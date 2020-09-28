@@ -37,13 +37,14 @@ using UnityEngine;public static class Kohonen{	public static Vector3 car1Ini
 		// Genera la red
 		Vector3[] network = generate_network(nNeuronas);
 
+		/*
 		for(int i = 0; i < network.Length; i++)
 		{
 			//Debug.Log(network[i]);
 			/*GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 			sphere.transform.position = network[i];
-			sphere.transform.localScale = new Vector3(10, 0.1f, 10);*/
-		}
+			sphere.transform.localScale = new Vector3(10, 0.1f, 10);
+		}*/
 		Debug.Log("Red de " + network.Length + " neuronas creada.");
 
 		double vecindario = (double)nNeuronas;
