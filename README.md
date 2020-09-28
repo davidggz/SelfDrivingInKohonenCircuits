@@ -6,11 +6,11 @@
 
 Este trabajo está separado en dos partes bien diferenciadas que se muestran en un mismo repositorio ya que ambas utilizan como base el mismo simulador de conducción. En concreto, las dos partes son las siguientes:
 
-* **Conducción autónoma.** Este módulo consiste en conducir un vehículo en Unity utilizando sola y exclusivamente como entrada una imagen generada por un modelo de Red Generativa Adversaria del repositorio https://github.com/davidggz/RealisticRoadsGAN. Para ello, se toma la imagen generada por la GAN y se segmentan las líneas de la carretera y se infiere el ángulo de giro con el uso de Deep Learning.
+* **Conducción autónoma.** Este módulo consiste en conducir un vehículo en Unity utilizando sola y exclusivamente como entrada una imagen generada por un modelo de Red Generativa Adversaria del repositorio <a href="https://github.com/davidggz/RealisticRoadsGAN">RealisticRoadsGAN</a>. Para ello, se toma la imagen generada por la GAN y se segmentan las líneas de la carretera y se infiere el ángulo de giro con el uso de Deep Learning.
 
-* **Circuitos aleatorios con mapas de Kohonen.** Este módulo se encarga de generar los circuitos cíclicos del simulador mediante el uso de mapas de Kohonen, un tipo de red de neuronas no supervisada. Esta implementación en C# está basado en la implementación de Diego Vicente https://github.com/DiegoVicen/som-tsp.
+* **Circuitos aleatorios con mapas de Kohonen.** Este módulo se encarga de generar los circuitos cíclicos del simulador mediante el uso de mapas de Kohonen, un tipo de red de neuronas no supervisada. Esta implementación en C# está basada en la implementación de Diego Vicente que aparece en el repositorio  <a href="https://github.com/DiegoVicen/som-tsp">som-tsp</a>.
 
-Para poder llevar a cabo este proyecto, ha sido necesario utilizar como base el simulador que el usuario de GitHub **tawnkramer** ofrece en su repositorio (https://github.com/tawnkramer/sdsandbox). Todas las modificaciones se han hecho sobre ese código.
+Para poder llevar a cabo este proyecto, ha sido necesario utilizar como base el simulador que el usuario de GitHub **tawnkramer** ofrece en su repositorio <a href="https://github.com/tawnkramer/sdsandbox">sdsandbox</a>. Todas las modificaciones se han hecho sobre ese código.
 
 # Circuitos aleatorios con mapas de Kohonen <img src="Imagenes/nn.png" width=45px>
 
@@ -41,7 +41,7 @@ Para poder visualizar los circuitos generados con esta técnica, es necesario bu
 
 # Conducción Autónoma con imágenes sintetizadas con GAN <img src="Imagenes/generador.png" width=45px>
 
-Este módulo consiste hacer la conducción autónoma utilizando solo las imágenes generadas por algunos modelos de GAN obtenidos en el siguiente repositorio https://github.com/davidggz/RealisticRoadsGAN. En concreto, los dos modelos que se han utilizado son GAUGAN entrenado con Cityscapes y Pix2PixHD entrenado con Cityscapes, dos de los mejores modelos obtenidos.
+Este módulo consiste hacer la conducción autónoma utilizando solo las imágenes generadas por algunos modelos de GAN obtenidos en el repositorio <a href="https://github.com/davidggz/RealisticRoadsGAN">RealisticRoadsGAN</a> mencionado anteriormente. En concreto, los dos modelos que se han utilizado son GAUGAN entrenado con Cityscapes y Pix2PixHD entrenado con Cityscapes, dos de los mejores modelos obtenidos.
 
 El enfoque que se toma en este módulo está basado en dos fases distintas, la **segmentación de las líneas de la carretera** y la **inferencia del ángulo de giro**.
 
@@ -67,7 +67,7 @@ Para poder ejecutar esta parte, se recomienda tener instalado **CUDA** y **CUDNN
 * **Matplotlib**
 * **OpenCV**
 * **keras==2.2.4**
-* **torch>=1.0.0.** Instalación en https://pytorch.org/.
+* **torch>=1.0.0.** Instalación recomendada en <a href=https://pytorch.org/>pytorch.org</a>.
 * **dominate**
 * **dill**
 * **scikit-image**
