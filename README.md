@@ -55,7 +55,11 @@ Una vez el modelo ha sido entrenado al completo, la red convolucional es capaz d
 
 <img src="Imagenes/segmentacion.gif" alt="Segmentación de líneas." width="500"/>
 
-## Instalación
+## Inferencia del ángulo de giro
+
+Una vez las líneas de la carretera han sido totalmente segmentadas, inferir el ángulo de giro es trivial. Incluyendo la red densamente conectada y utilizando un nuevo data set compuesto por las imágenes realistas y el ángulo de giro, se puede hacer un modelo rápidamente.
+
+# Instalación
 Para poder ejecutar esta parte, se recomienda tener instalado **CUDA** y **CUDNN** para que la inferencia en tiempo real sea rápida. La versión de Python que se necesita para poder ejecutar los modelos con la GPU ha de ser menor o igual a la versión 3.7. En concreto, se recomienda utilizar la **versión 3.7 de Python**. En cuanto a las librerías necesarias para ejecutar todo correctamente, se necesitan las siguientes:
 
 * **Numpy**
@@ -71,7 +75,7 @@ Para poder ejecutar esta parte, se recomienda tener instalado **CUDA** y **CUDNN
 
 Una vez instaladas estas librerías y cumplidas todos los requisitos, el sistema debería funcionar todo correctamente. 
 
-## Tutorial de uso <img src="Imagenes/tutorial.png" width=45px>
+# Tutorial de uso <img src="Imagenes/tutorial.png" width=45px>
 
 Para poder ejecutar la conducción autónoma debemos seguir dos simples pasos.
 
