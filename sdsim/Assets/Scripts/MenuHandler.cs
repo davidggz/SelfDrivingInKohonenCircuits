@@ -81,7 +81,7 @@ public class MenuHandler : MonoBehaviour {
 
 		loggerClass.setPhotoMode(1);
 		loggerClass.setUseThirdPhoto(true);
-		Logger.SetActive(true);
+		//Logger.SetActive(true);
 		GANInfere.SetActive(true);
 		menuPanel.SetActive(false);
 		stopPanel.SetActive(true);

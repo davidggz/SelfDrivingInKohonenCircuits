@@ -1,17 +1,7 @@
-# STEERING
+# Comandos para hacer conducción autónoma
 
-python predict_server.py --steeringModel steering/0046-ConduccionAutonoma-0042+DDD-0001.h5 --GAN Mod1-OnlyCityscapes-512 --labeler 0025-segmentedToLabelNet-CCCC-0001
+# GAUGAN con VAE
+python predict_server-GAUGAN-VAE.py --steeringModel steering/0050-ConduccionAutonoma-0042+DDD-0005.h5 --GAN Cityscapes-LabeledMio-VAE --style_image styleimages/cityscapesPhoto.png
 
-python predict_server.py --steeringModel steering/0048-ConduccionAutonoma-0042+DDD-0003.h5 --GAN Mod1-OnlyCityscapes-512 --labeler 0025-segmentedToLabelNet-CCCC-0001
-
-python predict_server.py --steeringModel steering/0049-ConduccionAutonoma-0042+DDD-0004.h5 --GAN Mod1-OnlyCityscapes-512 --labeler 0025-segmentedToLabelNet-CCCC-0001
-
-python predict_server-Pix2PixHD.py --steeringModel steering/0050-ConduccionAutonoma-0042+DDD-0005.h5 --GAN Mod1-OnlyCityscapes-512 --labeler 0025-segmentedToLabelNet-CCCC-0001
-
-# GAUGAN
-
-python predict_server-GAUGAN.py --steeringModel steering/0050-ConduccionAutonoma-0042+DDD-0005.h5 --GAN Cityscapes-LabeledMio-Mod1 --labeler 0025-segmentedToLabelNet-CCCC-0001
-
-# GAUGAN-VAE
-
-python predict_server-GAUGAN-VAE.py --steeringModel steering/0050-ConduccionAutonoma-0042+DDD-0005.h5 --GAN Cityscapes-LabeledMio-VAE --labeler 0025-segmentedToLabelNet-CCCC-0001 --style_image styleimages/cityscapesPhoto.png
+# Pix2PixHD
+python predict_server-Pix2PixHD.py --steeringModel steering/0050-ConduccionAutonoma-0042+DDD-0005.h5 --GAN Mod1-OnlyCityscapes-512 
