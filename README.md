@@ -47,7 +47,9 @@ El enfoque que se toma en este módulo está basado en dos fases distintas, la *
 
 ## Segmentación de las líneas de la carretera
 
-A las imágenes generadas por las GAN se les introduce de manera artificial las líneas de la carretera para intentar emular lo que sería una carretera realista. Para segmentar estas líneas de la carretera se utiliza un autoencoder; una estructura convolucional con forma de reloj de arena que es entrenada de manera supervisada.
+A las imágenes generadas por las GAN se les introduce de manera artificial las líneas de la carretera para intentar emular lo que sería una carretera realista. Para segmentar estas líneas de la carretera se utiliza un **autoencoder**; una estructura convolucional con forma de reloj de arena que es entrenada de manera supervisada.
+
+<img src="Imagenes/Autoencoder.gif" alt="Autoencoder" width="500"/>
 
 ## Modelos de síntesis de carreteras realistas <img src="Imagenes/nn.png" width=45px>
 
