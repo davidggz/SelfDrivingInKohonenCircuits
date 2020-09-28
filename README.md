@@ -14,6 +14,16 @@ Para poder llevar a cabo este proyecto, ha sido necesario utilizar como base el 
 
 # Circuitos aleatorios con mapas de Kohonen
 
+Los **mapas de Kohonen** son un tipo de red de neuronas capaz de adaptarse a un conjunto de datos de entrada. Normalmente, la red de neuronas de este tipo de arquitecturas es un conjunto de puntos en el espacio de entrada n-dimensional que se va acercando poco a poco a los patrones de entrada más próximos. Para poder hacer este proceso, es necesario tener en cuenta dos parámetros realmente importantes:
+
+* **Función de vecindario.** Este parámetro indica cuáles son las neuronas que serán arrastradas junto a la neurona ganadora en cada iteración del entrenamiento. Normalmente, esta función es discreta y muy simple.
+
+* **Forma del mapa de neuronas.** El mapa de neuronas está compuesto por el conjunto de las neuronas en sí y las conexiones que hay entre ellas. Habitualmente, el mapa de neuronas es bidimensional y cada neurona se conecta con cuatro neuronas, generando una especie de paralelogramo conceptual.
+
+El enfoque que se aplica en este trabajo es utilizar el mapa de Kohonen para resolver el problema del TSP (Travelling Salesman Problem) de manera aproximada. Para hacer esto, en primer lugar el vecindario pasa de ser bidimensional a ser unidimensional circular, generando un anillo elástico que cambia en cada iteración. En segundo lugar, la función de vecindario pasa a ser gaussiana, haciendo que cada vez que una neurona es ganadora, se muevan las que están a su lado de manera ponderada. Como se puede ver en la siguiente imagen, en los resultados intermedios se obtienen resultados parecidos a lo que sería un circuito.
+
+<img src="Imagenes/ComparacionEntreEstadosKohonen.png" width=30px>
+
 ## Modelos de síntesis de carreteras realistas <img src="Imagenes/nn.png" width=45px>
 
 Los modelos que se muestran en la siguiente tabla han sido entrenados con distintos conjuntos de imágenes que se explican en la memoria del trabajo de fin de grado. Algunos de ellos son ampliamente conocidos, como *Cityscapes* o ADE20K, pero igualmente se van a puntualizar algunos datos.
