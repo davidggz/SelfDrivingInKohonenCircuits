@@ -53,7 +53,7 @@ A las imágenes generadas por las GAN se les introduce de manera artificial las 
 
 Una vez el modelo ha sido entrenado al completo, la red convolucional es capaz de segmentar las líneas de la carretera de manera correcta. Además, como las imágenes que solo tienen las líneas se han generado a partir del cuello de botella, en este se encuentran todas las características clave de las líneas de la carretera. Por este motivo, no solo se ha creado un segmentador de líneas de carretera, sino también un condensador de la información. En el siguiente gif se puede ver un ejemplo de esta segmentación:
 
-<img src="Imagenes/segmentacion.gif" alt="Segmentación de líneas." width=500"/>
+<img src="Imagenes/segmentacion.gif" alt="Segmentación de líneas." width="500"/>
 
 ## Modelos de síntesis de carreteras realistas <img src="Imagenes/nn.png" width=45px>
 
