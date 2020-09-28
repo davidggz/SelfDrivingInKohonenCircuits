@@ -39,7 +39,7 @@ Una vez se ha descargado el proyecto de Unity y se ha importado la carpeta sdsim
 
 Para poder visualizar los circuitos generados con esta técnica, es necesario buscar el **GameObject** llamado **PathManager**. Una vez encontrado este objeto, se debe activar la opción **DoKohonenPath** y desactivar **DoMakeRandomPath**. Cuando esta opción ha sido cambiada, solo se debe reejecutar el simulador.
 
-# Conducción Autónoma con imágenes sintetizadas con Redes Generativas Adversarias
+# Conducción Autónoma con imágenes sintetizadas con GAN <img src="Imagenes/generador.png" width=45px>
 
 Este módulo consiste hacer la conducción autónoma utilizando solo las imágenes generadas por algunos modelos de GAN obtenidos en el siguiente repositorio https://github.com/davidggz/RealisticRoadsGAN. En concreto, los dos modelos que se han utilizado son GAUGAN entrenado con Cityscapes y Pix2PixHD entrenado con Cityscapes, dos de los mejores modelos obtenidos.
 
@@ -56,10 +56,9 @@ Una vez el modelo ha sido entrenado al completo, la red convolucional es capaz d
 <img src="Imagenes/segmentacion.gif" alt="Segmentación de líneas." width="500"/>
 
 ## Inferencia del ángulo de giro
-
 Una vez las líneas de la carretera han sido totalmente segmentadas, inferir el ángulo de giro es trivial. Incluyendo la red densamente conectada y utilizando un nuevo data set compuesto por las imágenes realistas y el ángulo de giro, se puede hacer un modelo rápidamente.
 
-# Instalación
+# Instalación <img src="Imagenes/instalacion.png" width=45px>
 Para poder ejecutar esta parte, se recomienda tener instalado **CUDA** y **CUDNN** para que la inferencia en tiempo real sea rápida. La versión de Python que se necesita para poder ejecutar los modelos con la GPU ha de ser menor o igual a la versión 3.7. En concreto, se recomienda utilizar la **versión 3.7 de Python**. En cuanto a las librerías necesarias para ejecutar todo correctamente, se necesitan las siguientes:
 
 * **Numpy**
