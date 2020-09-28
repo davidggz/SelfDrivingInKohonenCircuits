@@ -12,25 +12,42 @@ Este trabajo está separado en dos partes bien diferenciadas que se muestran en 
 
 Para poder llevar a cabo este proyecto, ha sido necesario utilizar como base el simulador que el usuario de GitHub **tawnkramer** ofrece en su repositorio (https://github.com/tawnkramer/sdsandbox). Todas las modificaciones se han hecho sobre ese código.
 
-# Circuitos aleatorios con mapas de Kohonen
+# Circuitos aleatorios con mapas de Kohonen <img src="Imagenes/nn.png" width=45px>
 
-Los **mapas de Kohonen** son un tipo de red de neuronas capaz de adaptarse a un conjunto de datos de entrada. Normalmente, la red de neuronas de este tipo de arquitecturas es un conjunto de puntos en el espacio de entrada n-dimensional que se va acercando poco a poco a los patrones de entrada más próximos. Para poder hacer este proceso, es necesario tener en cuenta dos parámetros realmente importantes:
+## Explicación teórica
+Los **mapas de Kohonen** son un tipo de red de neuronas capaz de adaptarse a un conjunto de datos de entrada. Normalmente, la red de neuronas de este tipo de arquitecturas es un conjunto de puntos en el espacio de entrada n-dimensional que se va acercando poco a poco a los patrones de entrada más próximos. Para poder hacer este proceso, es necesario tener en cuenta **dos parámetros realmente importantes**:
 
 * **Función de vecindario.** Este parámetro indica cuáles son las neuronas que serán arrastradas junto a la neurona ganadora en cada iteración del entrenamiento. Normalmente, esta función es discreta y muy simple.
 
 * **Forma del mapa de neuronas.** El mapa de neuronas está compuesto por el conjunto de las neuronas en sí y las conexiones que hay entre ellas. Habitualmente, el mapa de neuronas es bidimensional y cada neurona se conecta con cuatro neuronas, generando una especie de paralelogramo conceptual.
 
-El enfoque que se aplica en este trabajo es utilizar el mapa de Kohonen para resolver el problema del TSP (Travelling Salesman Problem) de manera aproximada. Para hacer esto, en primer lugar el vecindario pasa de ser bidimensional a ser unidimensional circular, generando un anillo elástico que cambia en cada iteración. En segundo lugar, la función de vecindario pasa a ser gaussiana, haciendo que cada vez que una neurona es ganadora, se muevan las que están a su lado de manera ponderada.
+El enfoque que se aplica en este trabajo es utilizar el mapa de Kohonen para resolver el **problema del TSP** (Travelling Salesman Problem) de manera aproximada. Para hacer esto, en primer lugar el vecindario pasa de ser bidimensional a ser unidimensional circular, generando un **anillo elástico** que cambia en cada iteración. En segundo lugar, la función de vecindario pasa a ser **gaussiana**, haciendo que cada vez que una neurona es ganadora, se muevan las que están a su lado de manera ponderada.
 
 <img src="Imagenes/ComparacionEstadosKohonen.png" alt="Estado inicial, intermedio y final del mapa de Kohonen modificado." width="900"/>
 
 Como se puede ver en la imagen anterior, en los resultados intermedios se obtienen resultados parecidos a lo que sería un circuito. Retocando algunos de los parámetros (en concreto, la disminución de la ganancia y del radio de la gaussiana), se puede hacer que la red **converja en un estado intermedio**, permitiendo obtener los circuitos que se están buscando. En la siguiente imagen se pueden ver tres circuitos distintos generados con el script de Python.
 
-<img src="Imagenes/circuitosPython.png" alt="Tres circuitos distintos con distinta dificultad." width="700"/>
+<img src="Imagenes/circuitosPython.PNG" alt="Tres circuitos distintos con distinta dificultad." width="900"/>
 
 Una vez se consiguieron los anteriores resultados, se optó por implementar el código en C#. Se tuvieron que hacer algunos cambios sustanciales en el entrenamiento de la red de neuronas pero finalmente se consiguieron los resultados que se pueden ver en la siguiente imagen.
 
-<img src="Imagenes/ejemploKohonenUnity.png" alt="Circuito generado en Unity." width="500"/>
+<img src="Imagenes/ejemploKohonenUnity.PNG" alt="Circuito generado en Unity." width="500"/>
+
+## Código y tutorial de uso de los circuitos
+
+Una vez se ha descargado el proyecto de Unity y se ha importado la carpeta sdsim, el código se puede encontrar en el fichero Assets/Scripts/Kohonen.cs.
+
+Para poder visualizar los circuitos generados con esta técnica, es necesario buscar el **GameObject** llamado **PathManager**. Una vez encontrado este objeto, se debe activar la opción **DoKohonenPath** y desactivar **DoMakeRandomPath**. Cuando esta opción ha sido cambiada, solo se debe reejecutar el simulador.
+
+# Conducción Autónoma con imágenes sintetizadas con Redes Generativas Adversarias
+
+Este módulo consiste hacer la conducción autónoma utilizando solo las imágenes generadas por algunos modelos de GAN obtenidos en el siguiente repositorio https://github.com/davidggz/RealisticRoadsGAN. En concreto, los dos modelos que se han utilizado son GAUGAN entrenado con Cityscapes y Pix2PixHD entrenado con Cityscapes, dos de los mejores modelos obtenidos.
+
+El enfoque que se toma en este módulo está basado en dos fases distintas, la **segmentación de las líneas de la carretera** y la **inferencia del ángulo de giro**.
+
+## Segmentación de las líneas de la carretera
+
+A las imágenes generadas por las GAN se les introduce de manera artificial las líneas de la carretera para intentar emular lo que sería una carretera realista. Para segmentar estas líneas de la carretera se utiliza un autoencoder; una estructura convolucional con forma de reloj de arena que es entrenada de manera supervisada.
 
 ## Modelos de síntesis de carreteras realistas <img src="Imagenes/nn.png" width=45px>
 
