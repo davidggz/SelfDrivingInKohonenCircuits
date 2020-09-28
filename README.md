@@ -22,7 +22,7 @@ Los **mapas de Kohonen** son un tipo de red de neuronas capaz de adaptarse a un 
 
 El enfoque que se aplica en este trabajo es utilizar el mapa de Kohonen para resolver el problema del TSP (Travelling Salesman Problem) de manera aproximada. Para hacer esto, en primer lugar el vecindario pasa de ser bidimensional a ser unidimensional circular, generando un anillo elástico que cambia en cada iteración. En segundo lugar, la función de vecindario pasa a ser gaussiana, haciendo que cada vez que una neurona es ganadora, se muevan las que están a su lado de manera ponderada. Como se puede ver en la siguiente imagen, en los resultados intermedios se obtienen resultados parecidos a lo que sería un circuito.
 
-<img src="Imagenes/ComparacionEntreEstadosKohonen.png" width=30px>
+<img src="Imagenes/ComparacionEstadosKohonen.png" width=30px>
 
 ## Modelos de síntesis de carreteras realistas <img src="Imagenes/nn.png" width=45px>
 
