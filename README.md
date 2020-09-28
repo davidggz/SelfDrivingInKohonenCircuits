@@ -6,15 +6,13 @@
 
 Este trabajo está separado en dos partes bien diferenciadas que se muestran en un mismo repositorio ya que ambas utilizan como base el mismo simulador de conducción. En concreto, las dos partes son las siguientes:
 
-* **Conducción autónoma.** Este módulo consiste en conducir un vehículo en Unity utilizando sola y exclusivamente como entrada una imagen generada por un modelo de Red Generativa Adversaria del repositorio https://github.com/davidggz/RealisticRoadsGAN. Para ello, se toma la imagen generada por la GAN, se segmentan las líneas de la carretera y se infiere el ángulo de giro.
+* **Conducción autónoma.** Este módulo consiste en conducir un vehículo en Unity utilizando sola y exclusivamente como entrada una imagen generada por un modelo de Red Generativa Adversaria del repositorio https://github.com/davidggz/RealisticRoadsGAN. Para ello, se toma la imagen generada por la GAN y se segmentan las líneas de la carretera y se infiere el ángulo de giro con el uso de Deep Learning.
 
 * **Circuitos aleatorios con mapas de Kohonen.** Este módulo se encarga de generar los circuitos cíclicos del simulador mediante el uso de mapas de Kohonen, un tipo de red de neuronas no supervisada. Esta implementación en C# está basado en la implementación de Diego Vicente https://github.com/DiegoVicen/som-tsp.
 
-En este trabajo se expone tanto los resultados de un sistema de conducción autónoma basado en Deep Learning, como la implementación de un sistema de generación aleatoria de circuitos con mapas de Kohonen.
+Para poder llevar a cabo este proyecto, ha sido necesario utilizar como base el simulador que el usuario de GitHub **tawnkramer** ofrece en su repositorio (https://github.com/tawnkramer/sdsandbox). Todas las modificaciones se han hecho sobre ese código.
 
-La conducción autónoma es un tema latente actualmente y cualquier tipo de mejora y nuevo acercamiento que se pueda ofrecer puede llegar a ser determinante. En este trabajo se muestra un nuevo enfoque que consiste en la utilización de **Redes Generativas Adversarias** para generar imágenes de **carreteras realistas** que puedan ser utilizadas como apoyo para conjuntos de imágenes de Conducción Autónoma. Esto puede **acortar los tiempos de obtención de conjuntos de imágenes realistas** en situaciones determinadas, permitiendo que conjuntos de imágenes previamente muy escasos, comiencen a tener una buena cantidad de imágenes y variabilidad.
-
-Para poder llevar a cabo este proyecto, ha sido necesario utilizar como base el simulador que el usuario de GitHub **tawnkramer** ofrece en su repositorio (https://github.com/tawnkramer/sdsandbox). Se han hecho múltiples modificaciones a este simulador entre las que destacan la **generación de circuitos aleatorios con mapas de Kohonen** y la implementación de una **infraestructura cliente-servidor que permite transmitir imágenes de gran tamaño**. También se implementa un **sistema de conducción autónoma** capaz de conducir en algunos circuitos aleatorios con imágenes generadas por las GAN. En este repositorio solo se muestran los resultados obtenidos por la Redes Generativas Adversarias, para ver el resto de elementos, recomiendo acudir al siguiente repositorio.
+# Circuitos aleatorios con mapas de Kohonen
 
 ## Modelos de síntesis de carreteras realistas <img src="Imagenes/nn.png" width=45px>
 
