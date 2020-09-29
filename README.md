@@ -12,6 +12,8 @@ Este trabajo está separado en dos partes bien diferenciadas que se muestran en 
 
 Para poder llevar a cabo este proyecto, ha sido necesario utilizar como base el simulador que el usuario de GitHub **tawnkramer** ofrece en su repositorio <a href="https://github.com/tawnkramer/sdsandbox">sdsandbox</a>. Todas las modificaciones se han hecho sobre ese código.
 
+Para ver algunas explicaciones extra sobre el funcionamiento del sistema o por simple curiosidad, se recomienda acudir a la carpeta **Videos** de este mismo repositorio.
+
 # Circuitos aleatorios con mapas de Kohonen <img src="Imagenes/nn.png" width=45px>
 
 ## Explicación teórica
