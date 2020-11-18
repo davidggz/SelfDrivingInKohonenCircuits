@@ -1,4 +1,4 @@
-# Conducción autónoma con imágenes sintetizadas con GAN en circuitos aleatorios creados con mapas de Kohonen
+# Conducción autónoma con imágenes sintetizadas por Redes Generativas Adversarias
 
 **Link de la memoria del trabajo:** https://e-archivo.uc3m.es/ (Actualizado cuando esté disponible)
 
