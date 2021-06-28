@@ -7,7 +7,7 @@ opencv-python
 keras==2.2.4
 
 # Requerimientos de Pix2PixHD y GAUGAN específicos
-torch from https://pytorch.org/ >= 1.0.0
+torch >= 1.0.0
 dominate
 dill
 scikit-image
