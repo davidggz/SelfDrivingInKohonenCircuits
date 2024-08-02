@@ -4,7 +4,7 @@ tensorflow-gpu>=1.13.1
 Pillow
 matplotlib
 opencv-python
-keras==2.2.4
+keras==2.13.1
 
 # Requerimientos de Pix2PixHD y GAUGAN específicos
 torch >= 1.0.0
